@@ -1,26 +1,22 @@
 package com.fyp.fyp.model;
 
-import java.util.Set;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Set;
 
 @Entity
 @Data
 @Table(name = "carts")
 public class Cart {
     @Id
+    private Long id; // 使用 User 的 id 作为主键
+
     @OneToOne
+    @MapsId // 将 Cart 的主键映射到 User 的 id
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private User customer; // 关联的客户
+    private User customer;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<CartProduct> cartProducts; // 购物车中的商品项
+    private Set<CartProduct> cartProducts;
 }

@@ -10,25 +10,21 @@ import lombok.Data;
 public class CartProduct {
     @Id
     private Long cartId;
-    
+
     @Id
     private Long productId;
 
     @ManyToOne
-    @MapsId("cartId") // 映射复合主键中的 cartId
+    @MapsId("cartId") // 映射到复合主键中的 cartId
     @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart; // 关联的购物车
+    private Cart cart;
 
     @ManyToOne
-    @MapsId("productId") // 映射复合主键中的 productId
+    @MapsId("productId") // 映射到复合主键中的 productId
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product; // 关联的商品
+    private Product product;
 
     private double netPrice; // 商品净价
-
-    @Column(columnDefinition = "INT")
     private int quantity; // 商品数量
-
-    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String optionalSpec; // 可选规格
-} 
+}

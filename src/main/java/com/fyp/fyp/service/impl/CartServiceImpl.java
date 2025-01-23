@@ -1,6 +1,9 @@
 package com.fyp.fyp.service.impl;
 
 import com.fyp.fyp.Repository.CartProductRepository;
+import com.fyp.fyp.Repository.CartRepository;
+import com.fyp.fyp.Repository.ProductRepository;
+import com.fyp.fyp.model.Cart;
 import com.fyp.fyp.model.CartProduct;
 import com.fyp.fyp.service.CartService;
 import com.fyp.fyp.utils.JsonConverter;
@@ -14,12 +17,16 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
 
     private final CartProductRepository cartProductRepository;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
     private final JsonConverter jsonConverter;
 
     @Autowired
-    public CartServiceImpl(CartProductRepository cartProductRepository, JsonConverter jsonConverter) {
+    public CartServiceImpl(CartProductRepository cartProductRepository, CartRepository cartRepository,  JsonConverter jsonConverter, ProductRepository productRepository) {
         this.cartProductRepository = cartProductRepository;
         this.jsonConverter = jsonConverter;
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -61,6 +68,9 @@ public class CartServiceImpl implements CartService {
 
         // 创建新的 CartProduct 实体
         CartProduct cartProduct = new CartProduct();
+        System.out.println("eeeeeee"+cartRepository.findByCustomerId(userId));
+        cartProduct.setProduct(productRepository.findById(productId).get());
+        cartProduct.setCart(cartRepository.findByCustomerId(userId));
         cartProduct.setCartId(userId);
         cartProduct.setProductId(productId);
         cartProduct.setQuantity(quantity);

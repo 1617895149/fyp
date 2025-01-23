@@ -1,5 +1,6 @@
 package com.fyp.fyp.controller;
 
+import com.fyp.fyp.dto.AddToCartRequest;
 import com.fyp.fyp.dto.ApiResponse;
 import com.fyp.fyp.exception.BusinessException;
 import com.fyp.fyp.model.CartProduct;
@@ -33,15 +34,12 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ApiResponse<String> addToCart(@RequestParam String productId, 
-                                                 @RequestParam(required = false) int quantity, 
-                                                 @RequestParam Long price,
-                                                 @RequestParam(required = false) String optionalSpec, 
+    public ApiResponse<String> addToCart(@RequestBody AddToCartRequest request,
                                                  HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
         try {
-            cartService.addToCart(userId, Long.parseLong(productId), price, quantity, optionalSpec);
+            cartService.addToCart(userId, Long.parseLong(request.getProductId()), request.getPrice(), request.getQuantity(), request.getOptionalSpec());
             return ApiResponse.success("已成功添加");
         } catch (BusinessException e) {
             return ApiResponse.error(400, e.getMessage());
