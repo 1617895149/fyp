@@ -15,16 +15,17 @@ const faqs = [
   }
 ];
 
+
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 w-[100%]">
       <h2 className="text-lg font-medium text-gray-900">常见问题</h2>
-      <dl className="mt-4 space-y-4">
+      <div className="mt-4 space-y-4 max-w-[full] w-[full]">
         {faqs.map((faq, index) => (
           <div key={index} className="border-b border-gray-200 pb-4">
-            <dt>
+            <div>
               <button
                 className="flex w-full items-center justify-between text-left"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -34,25 +35,27 @@ export default function FAQ() {
                 </span>
                 <span className="ml-6 flex items-center">
                   {openIndex === index ? (
-                    <svg className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg onClick={()=>{console.log('aaaa')}} className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                     </svg>
                   ) : (
-                    <svg className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg onClick={(e)=>{console.log(e.target.style.display)}} className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   )}
                 </span>
               </button>
-            </dt>
-            {openIndex === index && (
-              <dd className="mt-2 pr-12">
-                <p className="text-base text-gray-500">{faq.answer}</p>
-              </dd>
-            )}
+            </div>
+            
           </div>
+          
         ))}
-      </dl>
+      </div>
     </div>
   );
 } 
+
+
+// <div className='w-[full] border border-indigo-600 overflow-hidden duration-500'>
+//               <div className='w-[100%]'>fefefef</div>
+//             </div>

@@ -10,4 +10,6 @@ public interface CartService {
     void updateCartProductSpec(Long userId, Long productId, String newSpec);
     void removeCartProduct(Long userId, Long productId);
     void clearUserCart(Long userId);
+    void addToCart(Long userId, Long productId, Long price, int quantity, String optionalSpec);
+    
 } 

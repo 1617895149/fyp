@@ -50,6 +50,7 @@ const OptionalSpecification = ({ specifications, setSpecifications }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={addSpecification}
+          type="button"
           className="flex items-center px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
         >
           <i className="bi bi-plus-lg mr-1"></i>
@@ -110,6 +111,7 @@ const OptionalSpecification = ({ specifications, setSpecifications }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              type="button"
               onClick={() => addValue(specIndex)}
               className="mt-2 flex items-center px-3 py-1 text-sm text-blue-500 hover:text-blue-600"
             >

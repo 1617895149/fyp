@@ -7,7 +7,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Link to="/">
-              <img className="h-8 w-auto" src="/logo.png" alt="Logo" />
+            <i className="bi bi-cpu-fill text-5xl"></i>
             </Link>
           </div>
           

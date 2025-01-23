@@ -1,5 +1,6 @@
 package com.fyp.fyp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,9 @@ import com.fyp.fyp.security.CustomAuthenticationEntryPoint;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    @Autowired
     private final CustomAccessDeniedHandler accessDeniedHandler;
+    @Autowired
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
@@ -36,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/register", "/api/login").permitAll()
                 .requestMatchers("/api/products/**").permitAll()
                 .requestMatchers("/api/products/createProduct").permitAll()
+                .requestMatchers("/api/cart/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

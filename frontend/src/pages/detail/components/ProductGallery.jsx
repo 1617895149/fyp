@@ -4,7 +4,9 @@ import { ProductContext } from '../root';
 export default function ProductGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [productState] = useContext(ProductContext);
-  const { images } = productState.product;
+  const { product } = productState;
+  
+  const images = [product.imageUrl];
 
   const handleSlide = (direction) => {
     if (direction === 'next') {
@@ -16,22 +18,15 @@ export default function ProductGallery() {
 
   return (
     <div className="sticky top-24 space-y-4 w-full pr-12">
-      {/* 轮播容器 */}
-      <div className="relative overflow-hidden rounded-lg aspect-w-16 aspect-h-9">
+      {/* 主图容器 */}
+      <div className="relative rounded-lg bg-white">
         {/* 图片容器 */}
-        <div 
-          className="flex transition-transform duration-500 ease-in-out h-full"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {images.map((image, index) => (
-            <div key={index} className="flex-shrink-0 w-full h-full">
-              <img
-                src={image}
-                alt={`Product view ${index + 1}`}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          ))}
+        <div className="flex justify-center items-center h-[400px]"> {/* 固定高度容器 */}
+          <img
+            src={images[currentIndex]}
+            alt={product.name}
+            className="max-w-full max-h-full object-contain" // 图片自适应
+          />
         </div>
 
         {/* 前进/后退按钮 */}
@@ -105,4 +100,4 @@ export default function ProductGallery() {
       </div>
     </div>
   );
-} 
+}

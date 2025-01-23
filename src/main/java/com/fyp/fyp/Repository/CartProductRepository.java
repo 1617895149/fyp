@@ -25,6 +25,9 @@ public interface CartProductRepository extends JpaRepository<CartProduct, CartPr
     void updateCartProductSpec(@Param("userId") Long userId, 
                              @Param("productId") Long productId, 
                              @Param("newSpec") String newSpec);
+
+    @Query("SELECT cp FROM CartProduct cp WHERE cp.cartId = :userId AND cp.productId = :productId AND cp.optionalSpec = :optionalSpec")
+    Optional<CartProduct> findByUserIdAndProductIdAndOptionalSpec(Long userId, Long productId, String optionalSpec);
     
     @Modifying
     @Query("DELETE FROM CartProduct cp WHERE cp.cart.customer.id = :userId AND cp.product.id = :productId")
