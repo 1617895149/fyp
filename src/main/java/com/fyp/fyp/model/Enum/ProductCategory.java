@@ -1,7 +1,7 @@
 package com.fyp.fyp.model.Enum;
 
 public enum ProductCategory {
-    VIDEO_CARD,
+    GPU,
     CPU,
     RAM,
     STORAGE,

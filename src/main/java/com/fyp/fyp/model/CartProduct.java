@@ -1,5 +1,6 @@
 package com.fyp.fyp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,11 +10,13 @@ import lombok.Data;
 @IdClass(CartProductId.class)
 public class CartProduct {
     @Id
+    @Column(name = "cart_id")
     private Long cartId;
 
     @Id
     private Long productId;
 
+    @JsonIgnore
     @ManyToOne
     @MapsId("cartId") // 映射到复合主键中的 cartId
     @JoinColumn(name = "cart_id", nullable = false)
@@ -26,5 +29,7 @@ public class CartProduct {
 
     private double netPrice; // 商品净价
     private int quantity; // 商品数量
+
+    @Id
     private String optionalSpec; // 可选规格
 }

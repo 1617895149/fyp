@@ -2,6 +2,7 @@ package com.fyp.fyp.controller;
 
 import com.fyp.fyp.dto.AddToCartRequest;
 import com.fyp.fyp.dto.ApiResponse;
+import com.fyp.fyp.dto.CartProductDTO;
 import com.fyp.fyp.exception.BusinessException;
 import com.fyp.fyp.model.CartProduct;
 import com.fyp.fyp.service.CartService;
@@ -20,8 +21,11 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ApiResponse<List<CartProduct>> getUserCart(HttpSession session) {
+    public ApiResponse<List<CartProductDTO>> getUserCart(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ApiResponse.error(401, "请先登录");
+        }
         return ApiResponse.success(cartService.getUserCart(userId));
     }
     

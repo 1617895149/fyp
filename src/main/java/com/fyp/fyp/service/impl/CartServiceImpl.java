@@ -7,11 +7,13 @@ import com.fyp.fyp.model.Cart;
 import com.fyp.fyp.model.CartProduct;
 import com.fyp.fyp.service.CartService;
 import com.fyp.fyp.utils.JsonConverter;
+import com.fyp.fyp.dto.CartProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -30,8 +32,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartProduct> getUserCart(Long userId) {
-        return cartProductRepository.findByUserId(userId);
+    public List<CartProductDTO> getUserCart(Long userId) {
+        List<CartProduct> cartProducts = cartProductRepository.findByCartId(userId);
+        return cartProducts.stream().map(cp -> {
+            CartProductDTO dto = new CartProductDTO();
+            dto.setCartId(cp.getCartId());
+            dto.setProductId(cp.getProductId());
+            dto.setProductName(cp.getProduct().getName());
+            dto.setProductImage(cp.getProduct().getImageUrl());
+            dto.setNetPrice(cp.getNetPrice());
+            dto.setQuantity(cp.getQuantity());
+            dto.setOptionalSpec(cp.getOptionalSpec());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -66,9 +79,10 @@ public class CartServiceImpl implements CartService {
 
         String formattedOptionalSpec = jsonConverter.toJson(optionalSpec);
 
+        
+
         // 创建新的 CartProduct 实体
         CartProduct cartProduct = new CartProduct();
-        System.out.println("eeeeeee"+cartRepository.findByCustomerId(userId));
         cartProduct.setProduct(productRepository.findById(productId).get());
         cartProduct.setCart(cartRepository.findByCustomerId(userId));
         cartProduct.setCartId(userId);

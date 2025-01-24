@@ -8,9 +8,10 @@ import java.util.Objects;
 public class CartProductId implements Serializable {
     private Long cartId; // 购物车 ID
     private Long productId; // 商品 ID
+    private String optionalSpec;
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartId, productId);
+        return Objects.hash(cartId, productId, optionalSpec);
     }
 } 

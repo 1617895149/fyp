@@ -72,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
         System.err.print(request.getImageUrl());
         Product product = new Product();
         product.setCategory(request.getCategory());
+        System.out.println("xxx" + request.getCategory());
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setImageUrl(request.getImageUrl());
