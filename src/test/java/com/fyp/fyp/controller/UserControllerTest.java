@@ -4,7 +4,6 @@ import com.fyp.fyp.dto.ApiResponse;
 import com.fyp.fyp.dto.RegisterRequest;
 import com.fyp.fyp.exception.BusinessException;
 import com.fyp.fyp.model.User;
-import com.fyp.fyp.service.UserService;
 import com.fyp.fyp.Repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

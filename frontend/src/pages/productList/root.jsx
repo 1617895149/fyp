@@ -13,7 +13,7 @@ export default function Root() {
     setError(null);
 
     const fetchData = () => {
-      fetch('http://localhost:8080/api/products/category/CPU')
+      fetch('http://localhost:8080/api/products')
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -50,7 +50,7 @@ export default function Root() {
         {cardsData.map((cardInfo) => (
           <NavLink key={cardInfo.id} to={`/product/${cardInfo.id}`}>
             <Card
-              key={cardInfo.id}
+              key={cardsData.indexOf(cardInfo)}
               title={cardInfo.name}
               price={cardInfo.price}
               imageUrl={cardInfo.imageUrl}

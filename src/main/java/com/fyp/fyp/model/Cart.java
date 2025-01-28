@@ -17,6 +17,6 @@ public class Cart {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<CartProduct> cartProducts;
 }

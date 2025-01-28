@@ -23,6 +23,26 @@ public class ProductServiceImpl implements ProductService {
     // private final FirebaseStorageUtil util;
 
     @Override
+    public List<Product> getProduct() {
+        List<Product> products = productRepository.findAll();
+
+        for (Product product : products) {
+            // 转换规格和可选规格为Map
+            if (product.getSpecification() != null) {
+                Map<String, Object> specMap = jsonConverter.toMap(product.getSpecification());
+                product.setSpecification(jsonConverter.toJson(specMap));
+            }
+
+            if (product.getOptionalSpec() != null) {
+                Map<String, Object> optionalSpecMap = jsonConverter.toMap(product.getOptionalSpec());
+                product.setOptionalSpec(jsonConverter.toJson(optionalSpecMap));
+            }
+        }
+
+        return products;
+    }
+
+    @Override
     public Product getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "商品未找到"));
@@ -146,5 +166,6 @@ public class ProductServiceImpl implements ProductService {
         }
         productRepository.deleteById(id);
     }
+
 
 }

@@ -6,13 +6,12 @@ export default function CartList({ items, onUpdateQuantity, onRemoveItem }) {
   const contentRefs = useRef({});
 
   useEffect(() => {
-    // 计算每个规格详情的实际高度
     items.forEach(item => {
-      if (contentRefs.current[item.id]) {
-        const height = contentRefs.current[item.id].scrollHeight;
+      if (contentRefs.current[item.productId]) {
+        const height = contentRefs.current[item.productId].scrollHeight;
         setHeights(prev => ({
           ...prev,
-          [item.id]: height
+          [item.productId]: height
         }));
       }
     });
@@ -34,32 +33,32 @@ export default function CartList({ items, onUpdateQuantity, onRemoveItem }) {
     <div className="bg-white shadow rounded-lg overflow-hidden">
       <ul className="divide-y divide-gray-200">
         {items.map(item => (
-          <li key={item.id} className="p-6">
+          <li key={item.productId} className="p-6">
             <div className="flex items-center">
               <img 
-                src={item.image} 
-                alt={item.name}
+                src={item.productImage} 
+                alt={item.productName}
                 className="w-24 h-24 object-cover rounded-lg"
               />
               <div className="ml-6 flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">{item.name}</h3>
+                  <h3 className="text-lg font-medium text-gray-900">{item.productName}</h3>
                   <p className="text-lg font-medium text-gray-900">
-                    HK${item.price.toLocaleString()}
+                    HK${(item.netPrice * item.quantity).toLocaleString()}
                   </p>
                 </div>
                 
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center border rounded-md">
                     <button
-                      onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                      onClick={() => onUpdateQuantity(item.productId, Math.max(1, item.quantity - 1))}
                       className="px-3 py-1 text-gray-600 hover:text-gray-900"
                     >
                       -
                     </button>
                     <span className="px-3 py-1 border-x">{item.quantity}</span>
                     <button
-                      onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => onUpdateQuantity(item.productId, item.quantity + 1)}
                       className="px-3 py-1 text-gray-600 hover:text-gray-900"
                     >
                       +
@@ -67,7 +66,7 @@ export default function CartList({ items, onUpdateQuantity, onRemoveItem }) {
                   </div>
                   
                   <button
-                    onClick={() => onRemoveItem(item.id)}
+                    onClick={() => onRemoveItem(item.productId)}
                     className="text-red-600 hover:text-red-800"
                   >
                     移除
@@ -78,13 +77,13 @@ export default function CartList({ items, onUpdateQuantity, onRemoveItem }) {
             
             <div className="mt-4">
               <button
-                onClick={() => toggleExpand(item.id)}
+                onClick={() => toggleExpand(item.productId)}
                 className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
               >
-                {expandedItems.has(item.id) ? '收起' : '查看'} 详细规格
+                {expandedItems.has(item.productId) ? '收起' : '查看'} 详细规格
                 <svg
                   className={`ml-1 h-4 w-4 transform transition-transform duration-300 ${
-                    expandedItems.has(item.id) ? 'rotate-180' : ''
+                    expandedItems.has(item.productId) ? 'rotate-180' : ''
                   }`}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -100,12 +99,12 @@ export default function CartList({ items, onUpdateQuantity, onRemoveItem }) {
               </button>
               
               <div className="overflow-hidden transition-[height] duration-500 ease-in-out"
-                   style={{ height: expandedItems.has(item.id) ? `${heights[item.id]}px` : '0' }}>
-                <div ref={el => contentRefs.current[item.id] = el}>
+                   style={{ height: expandedItems.has(item.productId) ? `${heights[item.productId]}px` : '0' }}>
+                <div ref={el => contentRefs.current[item.productId] = el}>
                   <div className="py-2">
-                    {Object.entries(item.specs).map(([key, value]) => (
+                    {Object.entries(JSON.parse(item.optionalSpec)).map(([key, value]) => (
                       <div key={key} className="flex items-center mt-1">
-                        <span className="font-medium">{key.replace('_', ' ')}:</span>
+                        <span className="font-medium">{key}:</span>
                         <span className="ml-2">{value}</span>
                       </div>
                     ))}

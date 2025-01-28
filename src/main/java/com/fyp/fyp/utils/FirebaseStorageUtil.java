@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class FirebaseStorageUtil {
@@ -73,12 +72,12 @@ public class FirebaseStorageUtil {
      * @param fileName 文件名
      * @return 签名后的URL
      */
-    private String generateSignedUrl(String fileName) {
-        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, fileName)).build();
+    // private String generateSignedUrl(String fileName) {
+    //     BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, fileName)).build();
 
-        return storage.signUrl(blobInfo, 7, TimeUnit.DAYS, Storage.SignUrlOption.withV4Signature())
-                .toString();
-    }
+    //     return storage.signUrl(blobInfo, 7, TimeUnit.DAYS, Storage.SignUrlOption.withV4Signature())
+    //             .toString();
+    // }
 
     /**
      * 删除Firebase Storage中的图片

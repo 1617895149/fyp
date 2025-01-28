@@ -8,6 +8,7 @@ import com.fyp.fyp.model.Enum.ProductCategory;
 
 public interface ProductService {
     Product getProductById(Long id);
+    List<Product> getProduct();
     List<Product> getProductByCategory(ProductCategory category);
     Product createProduct(ProductRequest request);
     Product updateProduct(Long id, ProductRequest request);

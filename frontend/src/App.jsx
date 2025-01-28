@@ -5,6 +5,7 @@ import CreateProductPage from './pages/createProduct/CreateProductPage';
 import List from './pages/productList/root'
 import DetailRoot from './pages/detail/root';
 import Cart from './pages/cart/root'
+import Chat from './pages/chat/root'
 //import ProductDetail from './pages/productDetail/ProductDetail'
 
 const App = () => {
@@ -15,7 +16,8 @@ const App = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/products/create" element={<CreateProductPage />} />
       <Route path="/products" element={<List />} />
-      <Route path="/test" element={<Cart />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/test" element={<Chat />} />
       <Route path="/product/:id" element={<DetailRoot />} />
       
       

@@ -25,6 +25,11 @@ public class ProductController {
     private final ProductService productService;
     private final FirebaseStorageUtil firebaseStorageUtil;
 
+    @GetMapping
+    public ApiResponse<List<Product>> getProduct() {
+        return ApiResponse.success(productService.getProduct());
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<Product> getProduct(@PathVariable Long id) {
         return ApiResponse.success(productService.getProductById(id));

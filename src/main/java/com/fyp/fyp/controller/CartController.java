@@ -9,6 +9,7 @@ import com.fyp.fyp.service.CartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
@@ -21,11 +22,11 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ApiResponse<List<CartProductDTO>> getUserCart(HttpSession session) {
+    public ApiResponse<List<CartProductDTO>> getUserCart(HttpServletRequest request, HttpSession session) {
+        System.out.println("ggggg" + session.getAttribute("userId") + "ddd");
+        System.out.println("ggggg" + session.getAttribute("username") + "ddd");
+        //Long userId = Long.parseLong(request.getCookies()[0].getAttribute("userId"));
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return ApiResponse.error(401, "请先登录");
-        }
         return ApiResponse.success(cartService.getUserCart(userId));
     }
     
@@ -33,7 +34,9 @@ public class CartController {
     public ResponseEntity<CartProduct> getCartProduct(
             HttpSession session,
             @PathVariable Long productId) {
+                
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("ddd" + userId);
         return ResponseEntity.ok(cartService.getCartProduct(userId, productId));
     }
 

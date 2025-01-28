@@ -9,6 +9,15 @@ import com.fyp.fyp.Repository.UserRepository;
 import com.fyp.fyp.service.EmailService;
 import com.fyp.fyp.service.UserService;
 import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +27,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
@@ -78,17 +89,26 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public User login(LoginRequest request) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
+        Authentication authentication = authenticationManager.authenticate(token);
+
+        if(Objects.isNull(authentication)){
+            throw new BusinessException(401, "用户名或密码错误");
+        }
         // 根据用户名查找用户
         User user = userRepository.findByUsername(request.getUsername())
             .orElseThrow(() -> new BusinessException(401, "用户名或密码错误"));
+
+            
         
         // 验证密码
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BusinessException(401, "用户名或密码错误");
-        }
-        
+        //if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        //    throw new BusinessException(401, "用户名或密码错误");
+        //}
         // 更新最后登录时间
         user.setLastLoginTime(LocalDateTime.now());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("eeee"+SecurityContextHolder.getContext().getAuthentication());
         return userRepository.save(user);
     }
 } 

@@ -1,109 +1,106 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../detail/components/Navbar';
 import CartList from './components/CartList';
 import CartSummary from './components/CartSummary';
 import EmptyCart from './components/EmptyCart';
 
 export default function Cart() {
-  // 模拟后端数据
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "NVIDIA GeForce RTX 4090",
-      price: 12999,
-      quantity: 1,
-      image: "https://cdn.cs.1worldsync.com/a1/2e/a12e3313-e909-4d60-8a5f-b15a34d0d5e3.jpg",
-      specs: {
-        memory: "24GB GDDR6X",
-        boost_clock: "2.52 GHz",
-        cuda_cores: "16384",
-        power: "450W"
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCartItems = () => {
+    fetch('http://localhost:8080/api/cart', {
+      method: 'GET',
+      credentials: 'include',
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        setCartItems(data.data);
       }
-    },
-    {
-      id: 2,
-      name: "AMD Ryzen 9 7950X",
-      price: 4999,
-      quantity: 2,
-      image: "https://example.com/ryzen9.jpg",
-      specs: {
-        cores: "16 cores/32 threads",
-        base_clock: "4.5 GHz",
-        boost_clock: "5.7 GHz",
-        tdp: "170W"
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    })
+    .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  const updateQuantity = async (productId, newQuantity) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/cart/product/${productId}/quantity`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ quantity: newQuantity })
+      });
+
+      if (response.ok) {
+        setCartItems(items =>
+          items.map(item =>
+            item.productId === productId ? { ...item, quantity: newQuantity } : item
+          )
+        );
       }
-    },
-    {
-      id: 3,
-      name: "AMD Ryzen 9 7950X",
-      price: 4999,
-      quantity: 2,
-      image: "https://firebasestorage.googleapis.com/v0/b/fileserver-f7098.appspot.com/o/c1041827-0c72-49dc-9b09-c3dfc3d50568.jpg?alt=media",
-      specs: {
-        cores: "16 cores/32 threads",
-        base_clock: "4.5 GHz",
-        boost_clock: "5.7 GHz",
-        tdp: "170W"
-      }
-    },
-    {
-      id: 4,
-      name: "AMD Ryzen 9 7950X",
-      price: 4999,
-      quantity: 2,
-      image: "https://upload.wikimedia.org/wikipedia/commons/d/db/Swissbit_2GB_PC2-5300U-555.jpg",
-      specs: {
-        cores: "16 cores/32 threads",
-        base_clock: "4.5 GHz",
-        boost_clock: "5.7 GHz",
-        tdp: "170W"
-      }
-    },
-    {
-      id: 5,
-      name: "AMD Ryzen 9 7950X",
-      price: 4999,
-      quantity: 2,
-      image: "https://cdn.cs.1worldsync.com/a1/2e/a12e3313-e909-4d60-8a5f-b15a34d0d5e3.jpg",
-      specs: {
-        cores: "16 cores/32 threads",
-        base_clock: "4.5 GHz",
-        boost_clock: "5.7 GHz",
-        tdp: "170W"
-      }
-    },
-    {
-      id: 6,
-      name: "AMD Ryzen 9 7950X",
-      price: 4999,
-      quantity: 2,
-      image: "https://cdn.cs.1worldsync.com/a1/2e/a12e3313-e909-4d60-8a5f-b15a34d0d5e3.jpg",
-      specs: {
-        cores: "16 cores/32 threads",
-        base_clock: "4.5 GHz",
-        boost_clock: "5.7 GHz",
-        tdp: "170W"
-      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
     }
-  ]);
-
-  const updateQuantity = (id, newQuantity) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
   };
 
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  const removeItem = async (productId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/cart/product/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setCartItems(items => items.filter(item => item.productId !== productId));
+      }
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
   };
+
+  const clearCart = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/cart', {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
+  };
+
+  if (loading) {
+    return <div>加载中...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-8">购物车</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">购物车</h1>
+          {cartItems.length > 0 && (
+            <button
+              onClick={clearCart}
+              className="text-red-600 hover:text-red-800"
+            >
+              清空购物车
+            </button>
+          )}
+        </div>
         
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

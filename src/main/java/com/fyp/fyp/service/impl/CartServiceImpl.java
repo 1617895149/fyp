@@ -3,7 +3,6 @@ package com.fyp.fyp.service.impl;
 import com.fyp.fyp.Repository.CartProductRepository;
 import com.fyp.fyp.Repository.CartRepository;
 import com.fyp.fyp.Repository.ProductRepository;
-import com.fyp.fyp.model.Cart;
 import com.fyp.fyp.model.CartProduct;
 import com.fyp.fyp.service.CartService;
 import com.fyp.fyp.utils.JsonConverter;
@@ -79,8 +78,14 @@ public class CartServiceImpl implements CartService {
 
         String formattedOptionalSpec = jsonConverter.toJson(optionalSpec);
 
-        
+        ;
 
+        if(cartProductRepository
+        .findByUserIdAndProductIdAndOptionalSpec(userId, productId, formattedOptionalSpec).isPresent()){
+            System.out.println("nomore");
+        }
+
+        
         // 创建新的 CartProduct 实体
         CartProduct cartProduct = new CartProduct();
         cartProduct.setProduct(productRepository.findById(productId).get());
