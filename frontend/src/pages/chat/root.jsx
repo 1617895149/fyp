@@ -13,6 +13,13 @@ const mockUsers = [
     lastMessageTime: new Date().getTime() - 1000 * 60 * 5,
     unreadCount: 2
   },
+  {
+    id: 2,
+    name: "李四",
+    lastMessage: "好的，我知道了dwd",
+    lastMessageTime: new Date().getTime() - 1000 * 60 * 5,
+    unreadCount: 2
+  }
   // ... 更多用户
 ];
 
@@ -24,6 +31,13 @@ const mockMessages = [
     timestamp: new Date().getTime() - 1000 * 60 * 10,
     isCustomer: false
   },
+  {
+    id: 2,
+    type: 'text',
+    content: "您好，请问有什么可以帮您？",
+    timestamp: new Date().getTime() - 1000 * 60 * 10,
+    isCustomer: true
+  }
   // ... 更多消息
 ];
 

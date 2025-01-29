@@ -23,9 +23,6 @@ public class CartController {
 
     @GetMapping
     public ApiResponse<List<CartProductDTO>> getUserCart(HttpServletRequest request, HttpSession session) {
-        System.out.println("ggggg" + session.getAttribute("userId") + "ddd");
-        System.out.println("ggggg" + session.getAttribute("username") + "ddd");
-        //Long userId = Long.parseLong(request.getCookies()[0].getAttribute("userId"));
         Long userId = (Long) session.getAttribute("userId");
         return ApiResponse.success(cartService.getUserCart(userId));
     }
