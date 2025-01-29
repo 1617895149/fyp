@@ -6,6 +6,7 @@ import List from './pages/productList/root'
 import DetailRoot from './pages/detail/root';
 import Cart from './pages/cart/root'
 import Chat from './pages/chat/root'
+import CustomerChat from './pages/customerChat/root'
 //import ProductDetail from './pages/productDetail/ProductDetail'
 
 const App = () => {
@@ -17,7 +18,8 @@ const App = () => {
       <Route path="/products/create" element={<CreateProductPage />} />
       <Route path="/products" element={<List />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/test" element={<Chat />} />
+      <Route path="/chat" element={<Chat />} />
+      <Route path="/test" element={<CustomerChat />} />
       <Route path="/product/:id" element={<DetailRoot />} />
       
       

@@ -17,7 +17,7 @@ const Register = () => {
     password: '',
     email: '',
     phoneNumber: '',
-    userType: 'CUSTOMER'
+    userType: 'CUSTOMER_SERVICE'
   });
   const [loading, setLoading] = useState(false);
 

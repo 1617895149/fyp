@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/products/**").hasAnyRole("CUSTOMER")
                 .requestMatchers("/api/products/createProduct").hasAnyRole("ADMIN")
                 .requestMatchers("/api/cart/**").permitAll()
+                .requestMatchers("/api/chat/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

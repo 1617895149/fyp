@@ -1,47 +1,95 @@
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 
 class WebSocketService {
     constructor() {
         this.stompClient = null;
         this.subscriptions = new Map();
+        this.messageHandler = null;
     }
 
     connect(userId, userRole) {
-        const socket = new SockJS('http://localhost:8080/ws');
-        this.stompClient = Stomp.over(socket);
-
         return new Promise((resolve, reject) => {
-            this.stompClient.connect({}, () => {
-                const destination = userRole === 'ROLE_CUSTOMER' 
-                    ? `/queue/customer.${userId}`
-                    : `/queue/agent.${userId}`;
-                    
-                this.subscriptions.set(userId, 
-                    this.stompClient.subscribe(destination, message => {
-                        const chatMessage = JSON.parse(message.body);
-                        // 处理收到的消息
-                        this.messageHandler(chatMessage);
-                    })
-                );
-                resolve();
-            }, error => {
+            try {
+                this.stompClient = new Client({
+                    brokerURL: 'ws://localhost:8080/ws',
+                    debug: function (str) {
+                        console.log('STOMP: ' + str);
+                    },
+                    reconnectDelay: 5000,
+                    heartbeatIncoming: 4000,
+                    heartbeatOutgoing: 4000,
+                });
+
+                this.stompClient.onConnect = () => {
+                    console.log('Connected to STOMP');
+                    const destination = userRole === 'ROLE_CUSTOMER' 
+                        ? `/queue/customer.${userId}`
+                        : `/queue/agent.${userId}`;
+                        
+                    try {
+                        this.subscriptions.set(userId, 
+                            this.stompClient.subscribe(destination, message => {
+                                if (this.messageHandler) {
+                                    const chatMessage = JSON.parse(message.body);
+                                    this.messageHandler(chatMessage);
+                                }
+                            })
+                        );
+                        resolve();
+                    } catch (error) {
+                        console.error('Subscription error:', error);
+                        reject(error);
+                    }
+                };
+
+                this.stompClient.onStompError = (frame) => {
+                    console.error('STOMP error:', frame);
+                    reject(new Error('STOMP protocol error'));
+                };
+
+                this.stompClient.onWebSocketError = (event) => {
+                    console.error('WebSocket error:', event);
+                    reject(new Error('WebSocket error'));
+                };
+
+                this.stompClient.activate();
+            } catch (error) {
+                console.error('Connection setup error:', error);
                 reject(error);
-            });
+            }
         });
     }
 
     sendMessage(message) {
-        if (this.stompClient && this.stompClient.connected) {
-            this.stompClient.send("/app/chat.send", {}, JSON.stringify(message));
+        if (this.stompClient?.active) {
+            try {
+                this.stompClient.publish({
+                    destination: '/app/chat.send',
+                    body: JSON.stringify(message)
+                });
+            } catch (error) {
+                console.error('Send message error:', error);
+            }
+        } else {
+            console.warn('STOMP client is not active');
         }
     }
 
     disconnect() {
-        if (this.stompClient) {
-            this.subscriptions.forEach(subscription => subscription.unsubscribe());
-            this.subscriptions.clear();
-            this.stompClient.disconnect();
+        try {
+            if (this.stompClient?.active) {
+                this.subscriptions.forEach(subscription => {
+                    try {
+                        subscription.unsubscribe();
+                    } catch (error) {
+                        console.error('Unsubscribe error:', error);
+                    }
+                });
+                this.subscriptions.clear();
+                this.stompClient.deactivate();
+            }
+        } catch (error) {
+            console.error('Disconnect error:', error);
         }
     }
 
