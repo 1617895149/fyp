@@ -4,7 +4,11 @@ export default function MessageBubble({ message, isCustomer }) {
   return (
     <div className={`flex flex-col mb-4 ${isCustomer ? 'items-end' : 'items-start'}`}>
       {/* 时间戳 */}
+<<<<<<< HEAD
       <span className="text-xs text-gray-400 mb-1 items-start">
+=======
+      <span className="text-xs text-gray-400 mb-1">
+>>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
         {formatTime(message.timestamp)}
       </span>
       
