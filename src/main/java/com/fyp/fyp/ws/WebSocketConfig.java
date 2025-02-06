@@ -23,11 +23,11 @@ import com.fyp.fyp.service.ChatService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.http.server.ServletServerHttpResponse;
+
 
 import java.security.Principal;
 import java.util.Map;
@@ -87,6 +87,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     public class HttpHandshakeInterceptor implements HandshakeInterceptor {
+        ChatRoom chatRoom = new ChatRoom();
         @Override
         public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
             System.out.println("Before Handshake: " + request.getURI());
@@ -94,14 +95,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                 HttpSession session = servletRequest.getServletRequest().getSession(false);
                 if (session != null) {
-                    String userRole = (String) session.getAttribute("userRole");
+                    Object userRoleObj = session.getAttribute("userRole");
+                    String userRole = (userRoleObj != null) ? userRoleObj.toString() : null;
                     System.out.println("User Role: " + userRole);
                     if (userRole == null) {
                         System.out.println("User role is null, cannot proceed with handshake.");
                         return false; // 如果没有用户角色，拒绝握手
                     }
-                    if ("CUSTOMER".equals(userRole)) {
-                        ChatRoom chatRoom = chatService.createChatRoom(session.getAttribute("userId").toString());
+                    if ("ROLE_CUSTOMER".equals(userRole)) {
+                        chatRoom = chatService.createChatRoom(session.getAttribute("userId").toString());
                         attributes.put("chatRoomId", chatRoom.getChatRoomId());
                         attributes.put("userRole", userRole);
                         attributes.put("userId", session.getAttribute("userId").toString());

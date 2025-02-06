@@ -1,0 +1,222 @@
+body {
+    background-color: white;
+    font-family: Arial, sans-serif;
+    margin: 0px;
+  }
+
+  .pb {
+    display: flex;
+    justify-content: center;
+  }
+
+
+  .product-section {
+    margin-bottom: 20px;
+  }
+
+  .product {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    width: 50%;
+    margin-bottom: 10px;
+  }
+
+  .product-title {
+    font-size: 1.2em;
+  }
+
+  .product-price {
+    color: #666;
+  }
+
+  .color-selection {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .color-option {
+    width: 45%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .color-option:hover {
+    background-color: #f0f0f0;
+  }
+
+
+
+
+
+
+  .color-option {
+    display: inline-block;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 10px;
+    width: 182px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  
+  
+  
+
+
+
+  .color-option .color-sample,
+  .product-tab .color-sample {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+  }
+
+  
+
+
+  .product-tab label {
+    width: 100%;
+    height: 100%;
+    align-self: start;
+  }
+
+  .title {
+    text-align: start;
+  }
+
+  .details {
+    text-align: start;
+  }
+
+
+
+  .product-tab .title {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .product-tab .details {
+    color: #666;
+  }
+
+  .product-tab .price {
+    color: #007bff;
+    font-weight: bold;
+    position: absolute;
+    right: 3%;
+  }
+
+  .color-option .color-name,
+  .product-tab .price {
+    font-size: 1em;
+    color: #333;
+  }
+
+ 
+
+  div:has(input[type="radio"]:checked) {
+    border-color: #007bff;/* 为包含选中单选按钮的div添加红色边框 */
+  }
+
+  .color-option:hover,
+  form .product-tab:hover {
+    border-color: #007bff;
+    /* 鼠标悬停时的边框颜色 */
+  }
+
+  #tab14:hover{
+    background-color: #ccc;
+    transition: 0.3s;
+  }
+
+
+
+  input[type="radio"] {
+    display: none;
+  }
+
+
+  .custom-radio {
+    display: inline-block;
+    width: 16px;
+    /* 设置自定义单选按钮的大小 */
+    height: 16px;
+    border-radius: 50%;
+    /* 使其呈现圆形 */
+    background-color: gray;
+    /* 设置背景颜色 */
+    cursor: pointer;
+    margin: 6px;
+  }
+
+  /* 当单选按钮被选中时，改变背景颜色 */
+  input[type="radio"]:checked+.custom-radio {
+    background-color: black;
+    /* 设置选中时的背景颜色 */
+  }
+
+
+  @keyframes showPrice {
+    from {
+      bottom: 130%;
+    }
+
+    to {
+      bottom: 21%;
+    }
+
+  }
+
+  @keyframes forward {
+    0% {
+        transform: translate(-0%);
+    }
+    100% {
+        transform: translate(-53%);
+    }
+}
+
+@keyframes backward {
+  0% {
+      transform: translate(-53%);
+  }
+  100% {
+      transform: translate(0%);
+  }
+}
+
+  .forward{
+    animation-name: forward;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    
+  }
+
+  .backward{
+    animation-name: backward;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    
+  }
+
+  .show {
+    animation-name: showPrice;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+
+  svg:hover {
+    fill-opacity: 0.5;
+    transition: 0.8s
+  }
