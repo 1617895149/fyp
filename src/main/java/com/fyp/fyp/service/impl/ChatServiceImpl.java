@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.Map;
 
 
@@ -23,6 +24,7 @@ public class ChatServiceImpl implements ChatService{
     private final RedisTemplate<String, Object> redisTemplate;
     private static final String CHAT_ROOMS_KEY = "chatrooms";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private final ReentrantLock lock = new ReentrantLock();
 
     @Autowired
     public ChatServiceImpl(RedisTemplate<String, Object> redisTemplate) {
@@ -31,33 +33,32 @@ public class ChatServiceImpl implements ChatService{
 
     @Override
     public ChatRoom createChatRoom(String userId) {
-        HashOperations<String, String, ChatRoom> hashOps = redisTemplate.opsForHash();
-        String chatRoomKey = userId + ":" + "2";
+        lock.lock();
+        try {
+            HashOperations<String, String, ChatRoom> hashOps = redisTemplate.opsForHash();
+            String chatRoomKey = userId + ":" + "2";
 
-        // 创建聊天室对象
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.setCreatedAt(LocalDateTime.now().format(DATE_FORMATTER));
-        chatRoom.setMessages(new ArrayList<>()); // 初始化空消息列表
-        chatRoom.setChatRoomId(chatRoomKey);
-        chatRoom.setCustomerId(userId);
-        chatRoom.setAgentId("2");
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setCreatedAt(LocalDateTime.now().format(DATE_FORMATTER));
+            chatRoom.setMessages(new ArrayList<>());
+            chatRoom.setChatRoomId(chatRoomKey);
+            chatRoom.setCustomerId(userId);
+            chatRoom.setAgentId("2");
 
-        if (hashOps.hasKey(CHAT_ROOMS_KEY, chatRoomKey)) {
-            // 如果聊天室已经存在，直接从 Redis 中获取并返回
-            ChatRoom existingChatRoom = hashOps.get(CHAT_ROOMS_KEY, chatRoomKey);
-            return existingChatRoom;
+            if (hashOps.hasKey(CHAT_ROOMS_KEY, chatRoomKey)) {
+                return hashOps.get(CHAT_ROOMS_KEY, chatRoomKey);
+            }
+
+            LocalDateTime expiresAt = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
+            chatRoom.setExpiresAt(expiresAt.format(DATE_FORMATTER));
+
+            hashOps.put(CHAT_ROOMS_KEY, chatRoomKey, chatRoom);
+            redisTemplate.expire(CHAT_ROOMS_KEY, 5, TimeUnit.MINUTES);
+
+            return chatRoom;
+        } finally {
+            lock.unlock();
         }
-
-        // 存储到 Redis
-        
-
-        LocalDateTime expiresAt = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
-        chatRoom.setExpiresAt(expiresAt.format(DATE_FORMATTER));
-
-        hashOps.put(CHAT_ROOMS_KEY, chatRoomKey, chatRoom);
-        redisTemplate.expire(CHAT_ROOMS_KEY, 5, TimeUnit.MINUTES);
-
-        return chatRoom;
     }
 
     @Override
