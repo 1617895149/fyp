@@ -19,42 +19,26 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Long> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.register(request);
         return ApiResponse.success(user.getId());
     }
-<<<<<<< HEAD
 
     @PostMapping("/login")
     public ApiResponse<Long> login(@Valid @RequestBody LoginRequest request, HttpSession session,
             HttpServletResponse response) {
-=======
-    
-    @PostMapping("/login")
-    public ApiResponse<Long> login(@Valid @RequestBody LoginRequest request, HttpSession session, HttpServletResponse response) {
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
         User user = userService.login(request);
         session.setAttribute("userId", user.getId());
         session.setAttribute("username", user.getUsername());
         session.setAttribute("userRole", user.getRole());
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-<<<<<<< HEAD
         System.out.println(session.getAttribute("userId") + "eeeeee");
-=======
-        System.out.println(session.getAttribute("userId")+"eeeeee");
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
         Cookie cookie = new Cookie("JSESSIONID", session.getId());
         cookie.setMaxAge(60 * 60 * 24); // 有效期为一天
         cookie.setAttribute("userId", user.getId().toString());
         cookie.setPath("/");
-<<<<<<< HEAD
         // response.addCookie(cookie);
         return ApiResponse.success(user.getId());
     }
@@ -66,9 +50,3 @@ public class UserController {
         return ApiResponse.success("logout sucess");
     }
 }
-=======
-        //response.addCookie(cookie);
-        return ApiResponse.success(user.getId());
-    }
-} 
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b

@@ -70,25 +70,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< HEAD
-=======
-
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-
-		<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -115,7 +96,6 @@
 			<version>3.7.0</version>
 		</dependency>
 
-<<<<<<< HEAD
 		<!-- pom.xml -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -147,10 +127,6 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
             <version>2.1.6</version>
        </dependency>
-=======
-
-
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
 
 		<dependency>
             <groupId>org.springframework.boot</groupId>
@@ -175,21 +151,6 @@
 			<version>2.22.4</version>
 		</dependency>
 
-<<<<<<< HEAD
-=======
-		<!-- Spring WebSocket -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-		</dependency>
-		
-		<!-- STOMP -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-messaging</artifactId>
-		</dependency>
-
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
 	</dependencies>
 
 	<build>

@@ -14,10 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-<<<<<<< HEAD
-=======
-
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import java.util.Arrays;
@@ -36,22 +32,15 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
-<<<<<<< HEAD
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
    
-=======
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-<<<<<<< HEAD
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
@@ -67,26 +56,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
-=======
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/register", "/api/login").permitAll()
-                .requestMatchers("/api/products/**").hasAnyRole("CUSTOMER")
-                .requestMatchers("/api/products/createProduct").hasAnyRole("ADMIN")
-                .requestMatchers("/api/cart/**").permitAll()
-                .requestMatchers("/api/chat/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .exceptionHandling(exceptions -> exceptions
-                .accessDeniedHandler(accessDeniedHandler)
-                .authenticationEntryPoint(authenticationEntryPoint)
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            );
-        
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
         return http.build();
     }
 
@@ -97,11 +66,6 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -111,8 +75,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-<<<<<<< HEAD
 }
-=======
-} 
->>>>>>> 9d013e9f83b7fbdc497e41665e5ee3cf6c57851b
