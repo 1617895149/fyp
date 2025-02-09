@@ -6,32 +6,62 @@ function ChatRoom() {
   const [messages, setMessages] = useState([]);
   const [chatRoomId, setChatRoomId] = useState(null);
   const [client, setClient] = useState(null);
+  const [isConnected, setIsConnected] = useState(false); // 添加连接状态标志
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/ws', null, { 
+    let isMounted = true;
+    let subscription = null; // 用于存储订阅对象
+
+    const fetchChatRoomId = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/chat/getRoom/1', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const chatRoom = await response.json();
+        if (isMounted) {
+          setChatRoomId(chatRoom.chatRoomId);
+          console.log("efef" + chatRoom.chatRoomId);
+        }
+      } catch (error) {
+        console.error('Error fetching chat room:', error);
+      }
+    };
+
+    fetchChatRoomId();
+
+    const socket = new SockJS('http://localhost:8080/ws', null, {
       transports: ['websocket'],
-      withCredentials: true 
+      withCredentials: true
     });
+
     const newClient = new Client({
-      webSocketFactory: () => socket, // 使用 SockJS 实例
+      webSocketFactory: () => socket,
       brokerURL: 'ws://localhost:8080/ws',
       connectHeaders: {},
       debug: (str) => {
         console.log('STOMP: ' + str);
       },
-      debug: (str) => {
-        console.log('STOMP: ' + str);
-      },
       reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+      heartbeatIncoming: 300000, // 设置心跳时间（5分钟）
+      heartbeatOutgoing: 300000, // 设置心跳时间（5分钟）
       onConnect: (frame) => {
         console.log('Connected: ' + frame);
-        // 订阅特定聊天室的消息路径
+        setIsConnected(true); // 设置连接状态为已连接
         if (chatRoomId) {
-          newClient.subscribe(`/queue/messages/${chatRoomId}`, (message) => {
+          subscription = newClient.subscribe(`/queue/messages/${chatRoomId}`, (message) => {
             const receivedMessage = JSON.parse(message.body);
-            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            if (isMounted) {
+              setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+              console.log("Received message:", receivedMessage); // 打印接收到的消息
+            }
           });
         }
       },
@@ -44,19 +74,31 @@ function ChatRoom() {
     setClient(newClient);
 
     return () => {
-      newClient.deactivate();
+      isMounted = false;
+      if (isConnected) { // 只有在连接已建立时才取消订阅和关闭连接
+        if (subscription) {
+          subscription.unsubscribe(); // 清理订阅
+        }
+        //newClient.deactivate();
+      }
     };
   }, [chatRoomId]);
 
   const handleSendMessage = (text) => {
+    if (!text.trim()) {
+      console.warn('Message is empty');
+      return;
+    }
+
     const newMessage = {
       id: messages.length + 1,
       type: 'text',
       content: text,
       timestamp: new Date().getTime(),
-      isCustomer: true
+      isCustomer: true,
+      chatRoomId: chatRoomId // 添加 chatRoomId 到消息对象中
     };
-    setMessages([...messages, newMessage]);
+    //setMessages([...messages, newMessage]);
 
     if (client) {
       client.publish({

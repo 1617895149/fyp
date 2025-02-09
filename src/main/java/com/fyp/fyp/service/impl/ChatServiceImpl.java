@@ -71,6 +71,7 @@ public class ChatServiceImpl implements ChatService{
     @Override
     public void handleMessage(ChatMessage message) {
         String key = message.getChatRoomId() + ":messages";
+        System.out.println(key);
         redisTemplate.opsForList().leftPush(key, message.toString());
         
         //long count = 1;
