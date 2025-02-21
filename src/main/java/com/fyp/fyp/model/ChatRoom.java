@@ -1,30 +1,20 @@
 package com.fyp.fyp.model;
 
-
 import lombok.Data;
-
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.ArrayList;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatRoom {
     private String chatRoomId;
     private String customerId;
     private String agentId;
-    private String createdAt;
-    private String expiresAt;
-    private List<ChatMessage> messages;
-
-
-    @Override
-    public String toString() {
-        return "{"
-                + "\"chatRoomId\":\"" + chatRoomId + "\","
-                + "\"customerId\":\"" + customerId + "\","
-                + "\"agentId\":\"" + agentId + "\","
-                + "\"createdAt\":\"" + createdAt + "\","
-                + "\"expiresAt\":\"" + expiresAt + "\","
-                + "\"messages\":" + messages.toString() // 如果 messages 是 List<ChatMessage>，也需要重写 ChatMessage 的 toString 方法
-                + "}";
-    }
+    private LocalDateTime createdAt;
+    private LocalDateTime expiresAt;
+    private List<ChatMessage> messages = new ArrayList<>();
 } 

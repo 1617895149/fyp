@@ -28,8 +28,8 @@ public class FirebaseStorageUtil {
     @PostConstruct
     private void initializeFirebase() throws IOException {
         GoogleCredentials credentials = GoogleCredentials.fromStream(
-                new ClassPathResource("fileserver-f7098-firebase-adminsdk-ybi4n-8f5f9c098c.json").getInputStream());
-
+                new ClassPathResource("fileserver-f7098-firebase-adminsdk-ybi4n-db2cd4fccb.json").getInputStream());
+                
         StorageOptions options = StorageOptions.newBuilder()
                 .setProjectId(projectId)
                 .setCredentials(credentials)
@@ -156,7 +156,7 @@ public class FirebaseStorageUtil {
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
             System.out.println("aaaa" + blobInfo.getBucket());
             InputStream inputStream = FirebaseStorageUtil.class.getClassLoader()
-                    .getResourceAsStream("fileserver-f7098-firebase-adminsdk-ybi4n-8f5f9c098c.json");
+                    .getResourceAsStream("fileserver-f7098-firebase-adminsdk-ybi4n-db2cd4fccb.json");
             System.out.println(inputStream == null);
             // change the file name with your one
             Credentials credentials = GoogleCredentials.fromStream(inputStream);

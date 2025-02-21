@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import Bar from './bar';
 
 const Login = () => {
@@ -10,10 +10,13 @@ const Login = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(''); // 添加错误状态
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // 添加登录状态
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(''); // 清空之前的错误信息
     try {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
@@ -26,16 +29,22 @@ const Login = () => {
       
       const data = await response.json();
       if (data.code === 200) {
-        navigate('/dashboard');
+        setIsAuthenticated(true); // 设置登录状态为 true
       } else {
-        throw new Error(data.message);
+        throw new Error(data.message); // 抛出错误以触发 catch
       }
     } catch (error) {
       console.error('Login failed:', error);
+      setError(error.message); // 设置错误信息
     } finally {
       setLoading(false);
     }
   };
+
+  // 如果用户已登录，直接跳转到 /products 页面
+  if (isAuthenticated) {
+    return <Navigate to="/products" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 w-[100%]">
@@ -72,7 +81,9 @@ const Login = () => {
               onChange={(e) => setFormData({...formData, password: e.target.value})}
             />
           </div>
-
+          {error && (
+            <p className="text-red-500 text-center">{error}</p> // 显示错误信息
+          )}
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
@@ -83,15 +94,15 @@ const Login = () => {
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
           >
             {loading ? (
-              <>
+              <div className="flex items-center">
                 <i className="bi bi-arrow-clockwise animate-spin mr-2"></i>
                 登录中...
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex items-center">
                 登录
                 <i className="bi bi-arrow-right-circle-fill ml-2"></i>
-              </>
+              </div>
             )}
           </motion.button>
         </form>
@@ -100,4 +111,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

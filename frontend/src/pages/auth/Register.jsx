@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { 
   PersonFill, 
   LockFill, 
@@ -17,7 +17,7 @@ const Register = () => {
     password: '',
     email: '',
     phoneNumber: '',
-    userType: 'CUSTOMER_SERVICE'
+    userType: 'CUSTOMER' // 默认值
   });
   const [loading, setLoading] = useState(false);
 
@@ -34,8 +34,9 @@ const Register = () => {
       });
       
       const data = await response.json();
-      if (data.code === 201) {
-        navigate('/login');
+      if (data.code === 201 || data.code === 200) {
+        // 注册成功后跳转到登录页面
+        navigate('/login', { replace: true });
       } else {
         throw new Error(data.message);
       }
@@ -70,7 +71,7 @@ const Register = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="relative">
-              <PersonFill className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <PersonFill className="h-5 w-5 text-gray-400 absolute top-3 left-3 z-20" />
               <input
                 type="text"
                 required
@@ -81,7 +82,7 @@ const Register = () => {
               />
             </div>
             <div className="relative">
-              <LockFill className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <LockFill className="h-5 w-5 text-gray-400 absolute top-3 left-3 z-20" />
               <input
                 type="password"
                 required
@@ -92,7 +93,7 @@ const Register = () => {
               />
             </div>
             <div className="relative">
-              <EnvelopeFill className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <EnvelopeFill className="h-5 w-5 text-gray-400 absolute top-3 left-3 z-20" />
               <input
                 type="email"
                 required
@@ -103,7 +104,7 @@ const Register = () => {
               />
             </div>
             <div className="relative">
-              <TelephoneFill className="h-5 w-5 text-gray-400 absolute top-3 left-3" />
+              <TelephoneFill className="h-5 w-5 text-gray-400 absolute top-3 left-3 z-20" />
               <input
                 type="tel"
                 required
@@ -112,6 +113,20 @@ const Register = () => {
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
               />
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700">
+                注册身份
+              </label>
+              <select
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                value={formData.userType}
+                onChange={(e) => setFormData({...formData, userType: e.target.value})}
+              >
+                <option value="CUSTOMER">客户</option>
+                <option value="CUSTOMER_SERVICE">客服</option>
+                <option value="ADMIN">管理员</option>
+              </select>
             </div>
           </div>
 
@@ -132,4 +147,4 @@ const Register = () => {
   );
 };
 
-export default Register; 
+export default Register;

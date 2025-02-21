@@ -5,13 +5,16 @@ import CreateProductPage from './pages/createProduct/CreateProductPage';
 import List from './pages/productList/root'
 import DetailRoot from './pages/detail/root';
 import Cart from './pages/cart/root'
-import Chat from './pages/chat/root(customerservice)'
-import Test from './pages/chat/root(customer)'
-import { ChatBubbleBottomCenterIcon } from '@heroicons/react/16/solid';
-//import TimeDisplay from './pages/C/test';
-//import ProductDetail from './pages/productDetail/ProductDetail'
+import { UserRole } from './types/enums';
+import CustomerChat from './pages/chat/CustomerChat';
 
 const App = () => {
+  // 这里可以从认证状态获取用户信息
+  const currentUser = {
+    id: localStorage.getItem('userId') || 'user123', // 从localStorage获取用户ID
+    role: localStorage.getItem('userRole') || UserRole.CUSTOMER, // 从localStorage获取用户角色
+  };
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
@@ -20,9 +23,8 @@ const App = () => {
       <Route path="/products/create" element={<CreateProductPage />} />
       <Route path="/products" element={<List />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/chat" element={<Chat />} />
+      <Route path="/chat" element={<CustomerChat />} />
       <Route path="/product/:id" element={<DetailRoot />} />
-      <Route path="/test" element={<Test />} />
       <Route path="*" element={<div>404 Not Found</div>} />
     </Routes>
   );

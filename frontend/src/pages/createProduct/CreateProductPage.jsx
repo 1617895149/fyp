@@ -13,7 +13,7 @@ const CreateProductPage = () => {
     brand: '',
     price: '',
     stock: '',
-    category: '',
+    category: 'CPU',
     description: '',
     specification: {},
     optionalSpec: {}

@@ -13,23 +13,26 @@ export default function Root() {
     setError(null);
 
     const fetchData = () => {
-      fetch('http://localhost:8080/api/products')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          setCardsData(data.data);
-          setIsLoading(false);
-          
-        }).then(()=>console.log(cardsData))
-        .catch(error => {
-          console.error('Error fetching data: ', error);
-          setError('Failed to fetch data');
-          setIsLoading(false);
-        });
+      fetch('http://localhost:8080/api/products', {
+        method: 'GET', // 明确指定使用 GET 方法
+        credentials: 'include' // 确保携带 cookie
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setCardsData(data.data); // 假设返回的数据结构是 { data: [...] }
+        setIsLoading(false);
+      })
+      .then(() => console.log(cardsData)) // 注意：这里的 console.log(cardsData) 可能不会按预期工作
+      .catch(error => {
+        console.error('Error fetching data: ', error);
+        setError('Failed to fetch data');
+        setIsLoading(false);
+      });
     };
 
     fetchData();

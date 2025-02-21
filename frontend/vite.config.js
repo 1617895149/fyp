@@ -12,5 +12,8 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   }
 })

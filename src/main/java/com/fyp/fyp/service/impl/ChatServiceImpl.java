@@ -1,102 +1,129 @@
 package com.fyp.fyp.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.Map;
-
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import com.fyp.fyp.model.ChatMessage;
 import com.fyp.fyp.model.ChatRoom;
 import com.fyp.fyp.service.ChatService;
+import com.fyp.fyp.utils.ChatRedisUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Slf4j
 @Service
-public class ChatServiceImpl implements ChatService{
-    private final RedisTemplate<String, Object> redisTemplate;
-    private static final String CHAT_ROOMS_KEY = "chatrooms";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
-    private final ReentrantLock lock = new ReentrantLock();
+public class ChatServiceImpl implements ChatService {
+
+    private final ChatRedisUtil chatRedisUtil;
 
     @Autowired
-    public ChatServiceImpl(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public ChatServiceImpl(ChatRedisUtil chatRedisUtil) {
+        this.chatRedisUtil = chatRedisUtil;
+    }
+
+    /**
+     * 创建新的聊天室
+     * 每个客户只能有一个活跃的聊天室
+     * @param customerId 客户ID
+     * @return 新创建的聊天室或已存在的聊天室
+     */
+    @Override
+    public ChatRoom createChatRoom(String customerId) {
+        // 检查客户是否已有聊天室
+        List<ChatRoom> existingRooms = chatRedisUtil.getChatRoomsByUserId(customerId);
+        if (!existingRooms.isEmpty()) {
+            // 如果已有聊天室，返回第一个聊天室
+            ChatRoom existingRoom = existingRooms.get(0);
+            log.info("客户已有聊天室, id: {}", existingRoom.getChatRoomId());
+            return existingRoom;
+        }
+
+        // 固定客服ID为"2"
+        String agentId = "2";
+        // 生成聊天室ID：customerId:agentId
+        String chatRoomId = generateChatRoomId(customerId, agentId);
+        
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setChatRoomId(chatRoomId);
+        chatRoom.setCustomerId(customerId);
+        chatRoom.setAgentId(agentId);
+        chatRoom.setCreatedAt(LocalDateTime.now());
+        chatRoom.setExpiresAt(LocalDateTime.now().plusMinutes(5));
+        
+        chatRedisUtil.createChatRoom(chatRoom);
+        log.info("新聊天室已创建, id: {}", chatRoomId);
+        
+        return chatRoom;
     }
 
     @Override
-    public ChatRoom createChatRoom(String userId) {
-        lock.lock();
+    public List<ChatRoom> getChatRoomById(String id, String userRole) {
         try {
-            HashOperations<String, String, ChatRoom> hashOps = redisTemplate.opsForHash();
-            String chatRoomKey = userId + ":" + "2";
+            // 根据用户角色确定搜索模式
+            String pattern = userRole.equals("ROLE_CUSTOMER") ? 
+                String.format("%s:.*", id) :  // 客户模式：customerId:*
+                String.format(".*:%s", id);   // 客服模式：*:agentId
 
-            ChatRoom chatRoom = new ChatRoom();
-            chatRoom.setCreatedAt(LocalDateTime.now().format(DATE_FORMATTER));
-            chatRoom.setMessages(new ArrayList<>());
-            chatRoom.setChatRoomId(chatRoomKey);
-            chatRoom.setCustomerId(userId);
-            chatRoom.setAgentId("2");
-
-            if (hashOps.hasKey(CHAT_ROOMS_KEY, chatRoomKey)) {
-                return hashOps.get(CHAT_ROOMS_KEY, chatRoomKey);
-            }
-
-            LocalDateTime expiresAt = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
-            chatRoom.setExpiresAt(expiresAt.format(DATE_FORMATTER));
-
-            hashOps.put(CHAT_ROOMS_KEY, chatRoomKey, chatRoom);
-            redisTemplate.expire(CHAT_ROOMS_KEY, 5, TimeUnit.MINUTES);
-
-            return chatRoom;
-        } finally {
-            lock.unlock();
+            // 获取所有匹配的聊天室
+            return chatRedisUtil.searchChatRoomsByPattern(pattern);
+            
+        } catch (Exception e) {
+            log.error("搜索聊天室失败, id: {}, role: {}", id, userRole, e);
+            throw new RuntimeException("搜索聊天室失败", e);
         }
     }
 
+
+    /**
+     * 获取所有聊天室
+     * @return 聊天室列表
+     */
     @Override
     public List<ChatRoom> getAllChatRooms() {
-        HashOperations<String, String, ChatRoom> hashOps = redisTemplate.opsForHash();
-        Map<String, ChatRoom> entries = hashOps.entries(CHAT_ROOMS_KEY);
-        return new ArrayList<>(entries.values());
+        return chatRedisUtil.getAllChatRooms();
     }
 
+    /**
+     * 处理新消息
+     * @param message 聊天消息
+     */
     @Override
     public void handleMessage(ChatMessage message) {
-        String key = message.getChatRoomId() + ":messages";
-        System.out.println(key);
-        redisTemplate.opsForList().leftPush(key, message.toString());
+        String chatRoomId = message.getChatRoomId();
+        ChatRoom chatRoom = chatRedisUtil.getChatRoom(chatRoomId);
         
-        //long count = 1;
-//
-        // 
-        // ScanOptions scanOptions = ScanOptions.scanOptions()
-        //         .match(matchPattern)
-        //         .count(count)
-        //         .build();
-//
-        //// 使用scan方法
-        //try (Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(matchPattern, scanOptions)) {
-        //    while (cursor.hasNext()) {
-        //        Map.Entry<Object, Object> entry = cursor.next();
-        //        System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-        //        List<Object> messageList = ;
-        //    }
-        //} catch (Exception e) {
-        //    e.printStackTrace();
-        //}
-//
-
+        if (chatRoom == null) {
+            log.error("聊天室不存在: {}", chatRoomId);
+            throw new RuntimeException("聊天室不存在");
+        }
         
+        // 添加消息到聊天室
+        chatRoom.getMessages().add(message);
+        
+        // 更新聊天室
+        chatRedisUtil.updateChatRoom(chatRoom);
+        
+        // 刷新过期时间
+        chatRedisUtil.refreshChatRoomExpiration(chatRoomId);
+        
+        log.info("消息已添加到聊天室: {}", chatRoomId);
     }
 
-    
-    
-}
+    /**
+     * 根据ID获取聊天室
+     * @param id 聊天室ID
+     * @return 聊天室信息
+     */
+    public ChatRoom getChatRoomById(String id) {
+        return chatRedisUtil.getChatRoom(id);
+    }
+
+    /**
+     * 生成聊天室ID
+     * 格式：customerId:agentId
+     */
+    private String generateChatRoomId(String customerId, String agentId) {
+        return String.format("%s:%s", customerId, agentId);
+    }
+} 

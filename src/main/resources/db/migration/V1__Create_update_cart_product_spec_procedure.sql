@@ -28,3 +28,23 @@ BEGIN
         WHERE c.customer_id = @userId AND p.id = @productId
     END
 END 
+
+
+
+CREATE TRIGGER trg_after_insert_customer
+ON users
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 检查插入的行是否满足 UserRole = 'ROLE_CUSTOMER'
+    IF EXISTS (SELECT 1 FROM inserted WHERE role = 'ROLE_CUSTOMER')
+    BEGIN
+        -- 插入表 customers 的数据
+        INSERT INTO customers (user_id)
+        SELECT id
+        FROM inserted
+        WHERE role = 'ROLE_CUSTOMER';
+    END
+END;

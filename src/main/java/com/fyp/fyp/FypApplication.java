@@ -9,10 +9,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = {
     "com.fyp.fyp",          // 主包
     "com.fyp.fyp.config",   // 配置类
-    "com.fyp.fyp.security" ,
-    "com.fyp.fyp.ws" 
+    "com.fyp.fyp.security",
+    "com.fyp.fyp.ws",
+    "com.fyp.fyp.websocket" // 添加WebSocket相关包
 })
-@ComponentScan(basePackages = {"com.fyp.fyp", "com.fyp.fyp.ws"})
+@ComponentScan(basePackages = {"com.fyp.fyp", "com.fyp.fyp.ws", "com.fyp.fyp.websocket"})
 @EnableJpaRepositories(basePackages = "com.fyp.fyp.Repository")
 @EntityScan(basePackages = "com.fyp.fyp.model")
 public class FypApplication {

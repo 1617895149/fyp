@@ -1,35 +1,25 @@
-import { formatTime } from '../utils/timeFormat';
+import { format } from 'date-fns';
 
-export default function MessageBubble({ message, isCustomer }) {
-  return (
-    <div className={`flex flex-col mb-4 ${isCustomer ? 'items-end' : 'items-start'}`}>
-      {/* 时间戳 */}
-      <span className="text-xs text-gray-400 mb-1 items-start">
-        {formatTime(message.timestamp)}
-      </span>
-      
-      {/* 消息气泡 */}
-      <div className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-        isCustomer 
-          ? 'bg-[#333] text-white rounded-br-none ml-auto mr-4' 
-          : 'bg-[#f7f7f7] text-gray-800 rounded-bl-none ml-4'
-      } shadow-sm`}>
-        {/* 文本消息 */}
-        {message.type === 'text' && (
-          <p className="break-words">{message.content}</p>
-        )}
-        
-        {/* 文件消息 */}
-        {message.type === 'file' && (
-          <div className="flex items-center bg-gray-100 rounded p-2">
-            <i className="bi bi-file-earmark mr-2"></i>
-            <div>
-              <p className="text-sm font-medium">{message.fileName}</p>
-              <p className="text-xs text-gray-500">{message.fileSize}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-} 
+const MessageBubble = ({ message, isCustomer }) => {
+    const bubbleClass = isCustomer
+        ? "bg-blue-500 text-white self-end"
+        : "bg-white text-gray-800 self-start";
+
+    return (
+        <div className={`max-w-[70%] rounded-lg p-3 my-1 relative ${bubbleClass}`}>
+            <p className="break-words">{message.content}</p>
+            {message.type === 'image' && (
+                <img 
+                    src={message.content} 
+                    alt="发送的图片" 
+                    className="max-w-full rounded-lg mt-2"
+                />
+            )}
+            <span className="text-xs opacity-70 absolute bottom-1 right-2">
+                {format(new Date(message.timestamp), 'HH:mm')}
+            </span>
+        </div>
+    );
+};
+
+export default MessageBubble; 

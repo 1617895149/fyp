@@ -9,4 +9,5 @@ public interface ChatService {
     public ChatRoom createChatRoom(String userId);
     public List<ChatRoom> getAllChatRooms();
     public void handleMessage(ChatMessage message);
+    public List<ChatRoom> getChatRoomById(String id, String userRole);
 }
