@@ -56,7 +56,7 @@ export default function Root() {
               key={cardsData.indexOf(cardInfo)}
               title={cardInfo.name}
               price={cardInfo.price}
-              imageUrl={cardInfo.imageUrl}
+              imageUrl={cardInfo.imageUrl[0]}
               className="m-2"
             />
           </NavLink>

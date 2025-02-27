@@ -7,13 +7,15 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import lombok.extern.slf4j.Slf4j;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 
+@Slf4j
 public class HttpHandshakeInterceptor implements HandshakeInterceptor {
-
     private final ChatService chatService;
+    private ChatRoom chatRoom;
 
     public HttpHandshakeInterceptor(ChatService chatService) {
         this.chatService = chatService;
@@ -29,30 +31,30 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
                 ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                 HttpSession session = servletRequest.getServletRequest().getSession();
                 
-            String userId = session.getAttribute("userId").toString();
-            String userRole = session.getAttribute("userRole").toString();
-            
-            if (userId == null || userRole == null) {
-                return false;
-            }
-            
-            attributes.put("userId", userId);
-            attributes.put("userRole", userRole);
+                String userId = session.getAttribute("userId").toString();
+                String userRole = session.getAttribute("userRole").toString();
+                
+                log.info("WebSocket握手开始 - userId: {}, userRole: {}", userId, userRole);
+                
+                if (userId == null || userRole == null) {
+                    log.warn("用户信息不完整");
+                    return false;
+                }
+                
+                attributes.put("userId", userId);
+                attributes.put("userRole", userRole);
 
-            // 如果是客户，创建聊天室并保存到attributes中
-            if ("ROLE_CUSTOMER".equals(userRole)) {
-                ChatRoom chatRoom = chatService.createChatRoom(userId);
-                System.out.println("fffffff");
-                attributes.put("chatRoom", chatRoom);
-            }
-            return true;
+                if ("ROLE_CUSTOMER".equals(userRole)) {
+                    chatRoom = chatService.createChatRoom(userId);
+                    attributes.put("chatRoom", chatRoom);
+                    log.info("已创建聊天室: {}", chatRoom.getChatRoomId());
+                }
+                return true;
             } catch (Exception e) {
-                System.out.println("ggggggg");
-                System.out.println(e.getMessage());
+                log.error("握手过程中发生错误", e);
                 return false;
             }
         }
-        
         return false;
     }
 
@@ -61,6 +63,5 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
                              ServerHttpResponse response, 
                              WebSocketHandler wsHandler, 
                              Exception exception) {
-                                System.out.println("ggggggg");    
     }
 } 

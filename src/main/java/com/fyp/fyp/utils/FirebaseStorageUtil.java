@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -29,7 +31,7 @@ public class FirebaseStorageUtil {
     private void initializeFirebase() throws IOException {
         GoogleCredentials credentials = GoogleCredentials.fromStream(
                 new ClassPathResource("fileserver-f7098-firebase-adminsdk-ybi4n-db2cd4fccb.json").getInputStream());
-                
+
         StorageOptions options = StorageOptions.newBuilder()
                 .setProjectId(projectId)
                 .setCredentials(credentials)
@@ -55,7 +57,8 @@ public class FirebaseStorageUtil {
             // System.out.println(fileName);
             File file = this.convertToFile(multipartFile, fileName);
             System.out.println(file.toPath()); // to convert multipartFile to File
-            //Files.move(file.toPath(), Paths.get("C:\\Users\\User\\Desktop\\huuh.jpg"),StandardCopyOption.REPLACE_EXISTING);
+            // Files.move(file.toPath(),
+            // Paths.get("C:\Users\User\Desktop\huuh.jpg"),StandardCopyOption.REPLACE_EXISTING);
             String URL = this.uploadFile(file, file.toPath().toString()); // to get uploaded file link
             file.delete();
             return URL;
@@ -73,10 +76,12 @@ public class FirebaseStorageUtil {
      * @return 签名后的URL
      */
     // private String generateSignedUrl(String fileName) {
-    //     BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, fileName)).build();
+    // BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName,
+    // fileName)).build();
 
-    //     return storage.signUrl(blobInfo, 7, TimeUnit.DAYS, Storage.SignUrlOption.withV4Signature())
-    //             .toString();
+    // return storage.signUrl(blobInfo, 7, TimeUnit.DAYS,
+    // Storage.SignUrlOption.withV4Signature())
+    // .toString();
     // }
 
     /**
@@ -84,15 +89,20 @@ public class FirebaseStorageUtil {
      * 
      * @param imageUrl 图片URL
      */
-    public void deleteImage(String imageUrl) {
+    public void deleteImage(List<String> imageUrl) {
         try {
             // 从URL中提取文件路径
-            String fileName = extractFileNameFromUrl(imageUrl);
-            BlobId blobId = BlobId.of(bucketName, fileName);
+            List<String> fileName = new ArrayList<>();
+            for (String url : imageUrl) {
+                fileName.add(extractFileNameFromUrl(url));
+            }
+            for (String name : fileName) {
+                BlobId blobId = BlobId.of(bucketName, name);
 
-            boolean deleted = storage.delete(blobId);
-            if (!deleted) {
-                throw new BusinessException(404, "图片不存在或已被删除");
+                boolean deleted = storage.delete(blobId);
+                if (!deleted) {
+                    throw new BusinessException(404, "图片不存在或已被删除");
+                }
             }
         } catch (Exception e) {
             throw new BusinessException(500, "删除图片失败: " + e.getMessage());
@@ -126,7 +136,7 @@ public class FirebaseStorageUtil {
     public String updateImage(String oldImageUrl, MultipartFile newFile, String directory) {
         // 先删除旧图片
         if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-            deleteImage(oldImageUrl);
+            // deleteImage(oldImageUrl);
         }
 
         // 上传新图片

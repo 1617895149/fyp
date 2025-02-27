@@ -5,8 +5,11 @@ export default function ProductGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [productState] = useContext(ProductContext);
   const { product } = productState;
-  
-  const images = [product.imageUrl];
+
+ 
+  const images = product.imageUrl;
+  console.log(1111);
+  console.log(images);
 
   const handleSlide = (direction) => {
     if (direction === 'next') {
@@ -23,7 +26,7 @@ export default function ProductGallery() {
         {/* 图片容器 */}
         <div className="flex justify-center items-center h-[400px]"> {/* 固定高度容器 */}
           <img
-            src={images[currentIndex]}
+            src={images[currentIndex].toString()}
             alt={product.name}
             className="max-w-full max-h-full object-contain" // 图片自适应
           />

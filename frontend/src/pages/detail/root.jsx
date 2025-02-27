@@ -25,6 +25,7 @@ export default function Root() {
         setLoading(true);
         const response = await fetch(`/api/products/${id}`);
         const data = await response.json();
+        console.log(data);
         
         if (data.code === 200) {
           setProductState({

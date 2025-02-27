@@ -53,18 +53,9 @@ const ImageUpload = ({ images, setImages }) => {
               
               {images.length > 1 && (
                 <>
-                  <button
-                    onClick={() => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full z-10"
-                  >
-                    <i className="bi bi-chevron-left text-2xl"></i>
-                  </button>
-                  <button
-                    onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full z-10"
-                  >
-                    <i className="bi bi-chevron-right text-2xl"></i>
-                  </button>
+                  
+                    <i onClick={() => setCurrentIndex((prev) => (prev - 1) % images.length)} className="bi bi-chevron-left text-2xl absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 z-10"></i>
+                    <i onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)} className="bi bi-chevron-right text-2xl absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 z-10"></i>
                 </>
               )}
             </div>
@@ -77,8 +68,8 @@ const ImageUpload = ({ images, setImages }) => {
         </div>
 
         {/* 缩略图预览区域 - 30% 高度 */}
-        <div className="absolute bottom-0 left-0 w-full h-[30%] bg-gray-50 rounded-lg p-4">
-          <div className="flex gap-4 overflow-x-auto h-full items-center">
+        <div className="absolute bottom-0 left-0 w-full h-[30%] bg-gray-50 rounded-lg">
+          <div className="flex gap-4 overflow-x-auto h-full items-center p-2">
             {images.map((image, index) => (
               <motion.div
                 key={index}
@@ -95,7 +86,7 @@ const ImageUpload = ({ images, setImages }) => {
                 />
                 <button
                   onClick={() => removeImage(index)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                  className="rounded-[50%] absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
                 >
                   <i className="bi bi-x"></i>
                 </button>

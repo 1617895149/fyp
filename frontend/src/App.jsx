@@ -7,6 +7,7 @@ import DetailRoot from './pages/detail/root';
 import Cart from './pages/cart/root'
 import { UserRole } from './types/enums';
 import CustomerChat from './pages/chat/CustomerChat';
+import Test from './pages/chat/components/CustomerServiceChat';
 
 const App = () => {
   // 这里可以从认证状态获取用户信息
@@ -24,6 +25,7 @@ const App = () => {
       <Route path="/products" element={<List />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/chat" element={<CustomerChat />} />
+      <Route path="/test" element={<Test />} />
       <Route path="/product/:id" element={<DetailRoot />} />
       <Route path="*" element={<div>404 Not Found</div>} />
     </Routes>

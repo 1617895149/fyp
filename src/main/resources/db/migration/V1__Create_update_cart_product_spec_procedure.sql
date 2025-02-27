@@ -42,7 +42,7 @@ BEGIN
     IF EXISTS (SELECT 1 FROM inserted WHERE role = 'ROLE_CUSTOMER')
     BEGIN
         -- 插入表 customers 的数据
-        INSERT INTO customers (user_id)
+        INSERT INTO carts(customer_id)
         SELECT id
         FROM inserted
         WHERE role = 'ROLE_CUSTOMER';

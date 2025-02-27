@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import com.fyp.fyp.model.Enum.ProductCategory;
+
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -20,7 +22,7 @@ public class ProductRequest {
     private String description;
     
     @Nullable
-    private String imageUrl;
+    private List<String> imageUrl;
     
     @NotNull(message = "商品价格不能为空")
     @Positive(message = "商品价格必须大于0")

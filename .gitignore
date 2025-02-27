@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+src/main/resources/fileserver-f7098-firebase-adminsdk-ybi4n-8f5f9c098c.json
+src/main/resources/fileserver-f7098-firebase-adminsdk-ybi4n-db2cd4fccb.json
+src/main/resources/fireserver-adminsdk.json
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

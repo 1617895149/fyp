@@ -1,5 +1,5 @@
 export default function CartSummary({ items }) {
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.netPrice * item.quantity, 0);
   const shipping = 0; // 免运费
   const total = subtotal + shipping;
 

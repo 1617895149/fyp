@@ -3,6 +3,7 @@ package com.fyp.fyp.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fyp.fyp.model.Enum.ProductCategory;
 
@@ -24,8 +25,10 @@ public class Product {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @ElementCollection
+    
     @Column(nullable = false)
-    private String imageUrl;
+    private List<String> imageUrl;
 
     @Column(nullable = false)
     private double price;

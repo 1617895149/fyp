@@ -89,12 +89,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public Product createProduct(ProductRequest request) {
-        System.err.print(request.getImageUrl());
         Product product = new Product();
         product.setCategory(request.getCategory());
-        System.out.println("xxx" + request.getCategory());
         product.setName(request.getName());
         product.setDescription(request.getDescription());
+        System.out.println("xxxxxxxxx" + request.getImageUrl().get(0));
         product.setImageUrl(request.getImageUrl());
         product.setPrice(request.getPrice());
         // 转换规格和可选规格为JSON字符串
@@ -105,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
         if (request.getOptionalSpec() != null) {
             product.setOptionalSpec(jsonConverter.toJson(request.getOptionalSpec()));
         }
+        System.out.println("yyyyyyyyy" + product.getImageUrl());
 
         product.setStock(request.getStock());
         product.setBrand(request.getBrand());
