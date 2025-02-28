@@ -1,6 +1,8 @@
 package com.fyp.fyp.utils;
 
 import com.fyp.fyp.model.ChatRoom;
+import com.fyp.fyp.model.ChatMessage;
+import com.fyp.fyp.dto.ContactDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -197,6 +200,99 @@ public class ChatRedisUtil {
         } catch (Exception e) {
             log.error("搜索聊天室失败, pattern: {}", pattern, e);
             throw new RuntimeException("搜索聊天室失败", e);
+        }
+    }
+
+    public void updateAgentLastOnlineTime(String agentId, LocalDateTime time) {
+        try {
+            // 获取所有与该客服相关的聊天室
+            List<ChatRoom> agentRooms = searchChatRoomsByPattern(String.format(".*:%s", agentId));
+            
+            for (ChatRoom room : agentRooms) {
+                // 更新最后在线时间
+                room.getLastOnlineTime().put(agentId, time);
+                // 刷新过期时间
+                //refreshChatRoomExpiration(room.getChatRoomId());
+                // 更新聊天室
+                updateChatRoom(room);
+            }
+            
+            log.info("已更新客服最后在线时间, agentId: {}, time: {}", agentId, time);
+        } catch (Exception e) {
+            log.error("更新客服在线时间失败", e);
+            throw new RuntimeException("更新客服在线时间失败", e);
+        }
+    }
+
+    /**
+     * 获取客服的未读消息数量
+     * @param chatRoomId 聊天室ID
+     * @param agentId 客服ID
+     * @return 未读消息数量
+     */
+    public int getUnreadMessageCount(String chatRoomId, String agentId) {
+        try {
+            ChatRoom chatRoom = getChatRoom(chatRoomId);
+            if (chatRoom == null) {
+                return 0;
+            }
+
+            // 获取客服最后在线时间
+            LocalDateTime lastOnlineTime = chatRoom.getLastOnlineTime().get(agentId);
+            if (lastOnlineTime == null) {
+                // 如果没有最后在线时间记录，则所有消息都算作未读
+                return chatRoom.getMessages().size();
+            }
+
+            // 统计在最后在线时间之后的客户消息数量
+            return (int) chatRoom.getMessages().stream()
+                .filter(msg -> 
+                    msg.getTimestamp().isAfter(lastOnlineTime) && 
+                    !msg.getSenderId().equals(agentId)
+                )
+                .count();
+        } catch (Exception e) {
+            log.error("获取未读消息数量失败", e);
+            return 0;
+        }
+    }
+
+    /**
+     * 批量获取客服的所有聊天室未读消息
+     * @param agentId 客服ID
+     * @return 聊天室ContactDTO列表
+     */
+    public List<ContactDTO> getAgentContactList(String agentId) {
+        try {
+            // 获取所有与该客服相关的聊天室
+            List<ChatRoom> chatRooms = searchChatRoomsByPattern(String.format(".*:%s", agentId));
+            
+            // 转换为ContactDTO列表
+            return chatRooms.stream()
+                .map(room -> {
+                    ContactDTO dto = new ContactDTO();
+                    dto.setChatRoomId(room.getChatRoomId());
+                    dto.setCustomerId(room.getCustomerId());
+                    dto.setAgentId(room.getAgentId());
+                    dto.setCreatedAt(room.getCreatedAt());
+                    dto.setExpiresAt(room.getExpiresAt());
+                    
+                    // 获取未读消息数量
+                    dto.setNumOfUnReadMessage(getUnreadMessageCount(room.getChatRoomId(), agentId));
+                    
+                    // 获取最后一条消息信息
+                    if (!room.getMessages().isEmpty()) {
+                        ChatMessage lastMsg = room.getMessages().get(room.getMessages().size() - 1);
+                        dto.setLastMessage(lastMsg.getContent());
+                        dto.setLastMessageTime(lastMsg.getTimestamp());
+                    }
+                    
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("获取客服联系人列表失败", e);
+            return new ArrayList<>();
         }
     }
 

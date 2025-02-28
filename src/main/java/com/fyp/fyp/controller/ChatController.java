@@ -1,5 +1,6 @@
 package com.fyp.fyp.controller;
 
+import com.fyp.fyp.dto.ContactDTO;
 import com.fyp.fyp.model.ChatMessage;
 import com.fyp.fyp.model.ChatRoom;
 import com.fyp.fyp.service.ChatService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -113,5 +115,43 @@ public class ChatController {
             log.error("获取聊天室失败, id: {}", session.getAttribute("userId").toString(), e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PostMapping("/updateOnlineStatus")
+    public ResponseEntity<Void> updateOnlineStatus(@RequestBody Map<String, String> payload) {
+        try {
+            String agentId = payload.get("agentId");
+            chatService.updateAgentOnlineStatus(agentId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("更新在线状态失败", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * 获取客服的联系人列表
+     */
+    @GetMapping("/agent/contacts")
+    public ResponseEntity<List<ContactDTO>> getAgentContacts(HttpSession session) {
+        try {
+            String agentId = session.getAttribute("userId").toString();
+            List<ContactDTO> contacts = chatService.getAgentContacts(agentId);
+            return ResponseEntity.ok(contacts);
+        } catch (Exception e) {
+            log.error("获取客服联系人列表失败", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @MessageMapping("/markAsRead")
+    public void markMessagesAsRead(@Payload Map<String, String> payload) {
+        String chatRoomId = payload.get("chatRoomId");
+        String agentId = payload.get("agentId");
+        
+        // 只更新当前客服的未读消息状态
+        chatService.markMessagesAsRead(chatRoomId, agentId);
+        
+        // 不需要广播给其他客服
     }
 } 

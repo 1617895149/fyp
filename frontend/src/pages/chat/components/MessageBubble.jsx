@@ -1,26 +1,33 @@
 import { format } from 'date-fns';
 
-const MessageBubble = ({ message, isCustomer }) => {
+export default function MessageBubble({ message, isCustomer, isUnread }) {
     const bubbleClass = isCustomer
         ? "bg-blue-500 text-white self-end"
         : "bg-white text-gray-800 self-start";
 
     return (
-
-        <div className={`m-2 p-4 border max-w-[15%] my-1 relative ${bubbleClass}  border-[#ddd] bg-[#f7f7f7] shadow-inset shadow-inset-[inset_0_32px_32px_-32px_rgba(0,0,0,0.05)_inset_0_-32px_32px_-32px_rgba(0,0,0,0.05)] rounded-[20px_20px_20px_0px] text-left`}>
-            <p className="break-words">{message.content}</p>
-            {message.type === 'image' && (
-                <img
-                    src={message.content}
-                    alt="发送的图片"
-                    className="max-w-full rounded-lg mt-2"
-                />
-            )}
-            <span className="text-xs opacity-70 absolute bottom-1 right-2">
-                {format(new Date(message.timestamp), 'HH:mm')}
-            </span>
+        <div className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+            <div className={`
+                max-w-[70%] p-3 rounded-lg
+                ${isCustomer 
+                    ? 'bg-white text-gray-800' 
+                    : 'bg-blue-500 text-white'
+                }
+                ${isUnread ? 'ring-2 ring-yellow-400' : ''}
+            `}>
+                <p>{message.content}</p>
+                <div className={`
+                    text-xs mt-1
+                    ${isCustomer ? 'text-gray-500' : 'text-blue-100'}
+                `}>
+                    {new Date(message.timestamp).toLocaleTimeString()}
+                    {isUnread && 
+                        <span className="ml-2 text-yellow-500 font-medium">
+                            未读消息
+                        </span>
+                    }
+                </div>
+            </div>
         </div>
     );
-};
-
-export default MessageBubble; 
+} 

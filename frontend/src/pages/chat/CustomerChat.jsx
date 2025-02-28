@@ -35,8 +35,10 @@ const CustomerChat = () => {
     useEffect(() => {
         const initialize = async () => {
             try {
-                await checkExistingChatRoom();
-                await connectWebSocket();
+                const hasChatRoom = await checkExistingChatRoom();
+                if (hasChatRoom) {
+                    await connectWebSocket();
+                }
                 connectionCheckerRef.current = setInterval(checkConnection, 3000);
             } catch (error) {
                 console.error('Initialization failed:', error);
@@ -68,10 +70,12 @@ const CustomerChat = () => {
                 console.log(data[0].messages);
                 setMessages(data[0].messages);
                 setShowModal(false);
+                return true;
             } else {
                 console.log('No chat room found');
                 setShowModal(true);
                 setMessages([]);
+                return false;
             }
         } catch (error) {
             console.error('Failed to fetch chat rooms:', error);
@@ -163,9 +167,8 @@ const CustomerChat = () => {
             stompClient.current.subscribe(`/queue/messages/${roomId}`, (message) => {
                 const newMessage = JSON.parse(message.body);
                 console.log('Received message:', newMessage);
-                setShowModal(false);
-                setLoading(false);
                 setMessages((prev) => [...prev, newMessage]);
+                setLoading(false);
             });
         }
     };
@@ -180,13 +183,11 @@ const CustomerChat = () => {
             type,
         };
 
+        setLoading(true);
         stompClient.current.publish({
-            destination: '/chat/send',
+            destination: '/app/send',
             body: JSON.stringify(message),
         });
-        console.log('Sent message:', message);
-        setLoading(true);
-        setShowModal(true);
     };
 
     return (

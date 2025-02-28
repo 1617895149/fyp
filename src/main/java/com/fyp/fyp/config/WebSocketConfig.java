@@ -24,18 +24,24 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         this.messagingTemplate = messagingTemplate;
     }
 
+    @Autowired
+    private HttpHandshakeInterceptor handshakeInterceptor;
+
+    @Autowired
+    private CustomHandshakeHandler handshakeHandler;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/queue", "/topic");
-        config.setApplicationDestinationPrefixes("/chat");
+        config.setApplicationDestinationPrefixes("/app");
         //config.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setHandshakeHandler(new CustomHandshakeHandler(messagingTemplate))
-                .addInterceptors(new HttpHandshakeInterceptor(chatService))
-                .setAllowedOrigins("http://localhost:5173");
+                .setHandshakeHandler(handshakeHandler)
+                .addInterceptors(handshakeInterceptor)
+                .setAllowedOrigins("*");
     }
 } 

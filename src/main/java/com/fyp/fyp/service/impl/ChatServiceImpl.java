@@ -1,5 +1,6 @@
 package com.fyp.fyp.service.impl;
 
+import com.fyp.fyp.dto.ContactDTO;
 import com.fyp.fyp.model.ChatMessage;
 import com.fyp.fyp.model.ChatRoom;
 import com.fyp.fyp.service.ChatService;
@@ -125,5 +126,26 @@ public class ChatServiceImpl implements ChatService {
      */
     private String generateChatRoomId(String customerId, String agentId) {
         return String.format("%s:%s", customerId, agentId);
+    }
+
+    @Override
+    public void updateAgentOnlineStatus(String agentId) {
+        chatRedisUtil.updateAgentLastOnlineTime(agentId, LocalDateTime.now());
+    }
+
+    /**
+     * 获取客服的联系人列表
+     * @param agentId 客服ID
+     * @return 联系人列表
+     */
+    @Override
+    public List<ContactDTO> getAgentContacts(String agentId) {
+        return chatRedisUtil.getAgentContactList(agentId);
+    }
+
+    @Override
+    public void markMessagesAsRead(String chatRoomId, String agentId) {
+        // 更新最后在线时间，这样所有之前的消息都会被标记为已读
+        chatRedisUtil.updateAgentLastOnlineTime(agentId, LocalDateTime.now());
     }
 } 

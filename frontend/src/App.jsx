@@ -7,7 +7,7 @@ import DetailRoot from './pages/detail/root';
 import Cart from './pages/cart/root'
 import { UserRole } from './types/enums';
 import CustomerChat from './pages/chat/CustomerChat';
-import Test from './pages/chat/components/CustomerServiceChat';
+import Test from './pages/chat/CustomerServiceChat';
 
 const App = () => {
   // 这里可以从认证状态获取用户信息
