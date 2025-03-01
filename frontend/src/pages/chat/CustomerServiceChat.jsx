@@ -88,6 +88,7 @@ export default function CustomerServiceChat() {
 
   // 处理收到新消息
   const handleNewMessage = (chatRoomId, newMessage) => {
+    console.log(111 + selectedCustomer);
     // 如果是当前选中的聊天室，直接添加消息
     if (selectedCustomer && contacts.find(c => 
       c.chatRoomId === chatRoomId && c.customerId === selectedCustomer

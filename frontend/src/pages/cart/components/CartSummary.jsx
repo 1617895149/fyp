@@ -1,4 +1,4 @@
-export default function CartSummary({ items }) {
+export default function CartSummary({ items, onCheckout }) {
   const subtotal = items.reduce((sum, item) => sum + item.netPrice * item.quantity, 0);
   const shipping = 0; // 免运费
   const total = subtotal + shipping;
@@ -28,7 +28,10 @@ export default function CartSummary({ items }) {
         </div>
       </div>
       
-      <button className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button 
+        onClick={() => onCheckout(total)}
+        className="mt-6 w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
         结算
       </button>
       

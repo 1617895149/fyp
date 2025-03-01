@@ -3,10 +3,14 @@ import Navbar from '../detail/components/Navbar';
 import CartList from './components/CartList';
 import CartSummary from './components/CartSummary';
 import EmptyCart from './components/EmptyCart';
+import CheckoutModal from './components/CheckoutModal';
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [checkoutTotal, setCheckoutTotal] = useState(0);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   const fetchCartItems = () => {
     fetch('http://localhost:8080/api/cart', {
@@ -39,6 +43,8 @@ export default function Cart() {
         },
         body: JSON.stringify({ quantity: newQuantity })
       });
+
+      console.log(JSON.stringify({ quantity: newQuantity }));
 
       if (response.ok) {
         setCartItems(items =>
@@ -82,6 +88,45 @@ export default function Cart() {
     }
   };
 
+  const handleCheckout = (total) => {
+    setCheckoutTotal(total);
+    setIsCheckoutModalOpen(true);
+  };
+
+  const handleSubmitOrder = async (orderData) => {
+    try {
+      const response = await fetch('http://localhost:8080/api/orders', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await response.json();
+      
+      if (result.code === 200) {
+        // 订单创建成功
+        setOrderSuccess(true);
+        // 清空购物车（后端已经处理，这里只更新前端状态）
+        setCartItems([]);
+        
+        // 显示成功消息
+        alert('订单创建成功！');
+        
+        // 可以选择跳转到订单详情页
+        // window.location.href = `/orders/${result.data.id}`;
+      } else {
+        throw new Error(result.message || '创建订单失败');
+      }
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('创建订单失败: ' + error.message);
+      throw error;
+    }
+  };
+
   if (loading) {
     return <div>加载中...</div>;
   }
@@ -112,13 +157,24 @@ export default function Cart() {
               />
             </div>
             <div className="lg:col-span-1">
-              <CartSummary items={cartItems} />
+              <CartSummary 
+                items={cartItems} 
+                onCheckout={handleCheckout}
+              />
             </div>
           </div>
         ) : (
           <EmptyCart />
         )}
       </main>
+
+      {/* 结算弹窗 */}
+      <CheckoutModal 
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        onSubmit={handleSubmitOrder}
+        totalAmount={checkoutTotal}
+      />
     </div>
   );
 }

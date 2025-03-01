@@ -15,13 +15,8 @@ import com.fyp.fyp.service.ChatService;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final ChatService chatService;
-    private final SimpMessagingTemplate messagingTemplate;
-
     @Autowired
     public WebSocketConfig(ChatService chatService, @Lazy SimpMessagingTemplate messagingTemplate) {
-        this.chatService = chatService;
-        this.messagingTemplate = messagingTemplate;
     }
 
     @Autowired

@@ -100,4 +100,18 @@ public class CartServiceImpl implements CartService {
         cartProductRepository.save(cartProduct);
     }
 
+    @Override
+    @Transactional
+    public void updateCartProductQuantity(Long userId, Long productId, int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("数量必须大于0");
+        }
+        
+        CartProduct cartProduct = cartProductRepository.findByUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new RuntimeException("购物车中不存在该商品"));
+        
+        cartProduct.setQuantity(quantity);
+        cartProductRepository.save(cartProduct);
+    }
+
 }

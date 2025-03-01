@@ -7,7 +7,12 @@ import com.fyp.fyp.model.Product;
 import com.fyp.fyp.model.Enum.ProductCategory;
 
 public interface ProductService {
-    Product getProductById(Long id);
+    /**
+     * 根据ID获取商品
+     * @param productId 商品ID
+     * @return 商品对象
+     */
+    Product getProductById(Long productId);
     List<Product> getProduct();
     List<Product> getProductByCategory(ProductCategory category);
     Product createProduct(ProductRequest request);

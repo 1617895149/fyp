@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -73,6 +74,22 @@ public class CartController {
     public ResponseEntity<Void> clearUserCart(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         cartService.clearUserCart(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/product/{productId}/quantity")
+    public ResponseEntity<Void> updateCartProductQuantity(
+            HttpSession session,
+            @PathVariable Long productId,
+            @RequestBody Map<String, Integer> payload) {
+        Long userId = (Long) session.getAttribute("userId");
+        Integer quantity = payload.get("quantity");
+        
+        if (quantity == null || quantity < 1) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        cartService.updateCartProductQuantity(userId, productId, quantity);
         return ResponseEntity.ok().build();
     }
 

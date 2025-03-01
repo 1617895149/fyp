@@ -12,5 +12,5 @@ public interface CartService {
     void removeCartProduct(Long userId, Long productId);
     void clearUserCart(Long userId);
     void addToCart(Long userId, Long productId, Long price, int quantity, String optionalSpec);
-    
+    void updateCartProductQuantity(Long userId, Long productId, int quantity);
 } 
