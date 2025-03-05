@@ -45,7 +45,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
 
   return (
-    <div className={`transition-all duration-300 h-[110vh] sticky top-0 bg-white shadow-md z-10 ${collapsed ? 'w-20' : 'w-64'}`}>
+    <div className={`transition-all duration-300 h-[100vh] sticky top-0 bg-white shadow-md z-10 ${collapsed ? 'w-20' : 'w-64'}`}>
       <div className="flex items-center justify-between p-4 border-b">
         {!collapsed && <h1 className="text-xl font-bold text-blue-600">ORDERAN</h1>}
         <button 
