@@ -3,10 +3,7 @@ package com.fyp.fyp.service.impl;
 import com.fyp.fyp.Repository.OrderItemRepository;
 import com.fyp.fyp.Repository.OrderRepository;
 import com.fyp.fyp.Repository.UserRepository;
-import com.fyp.fyp.dto.CartProductDTO;
-import com.fyp.fyp.dto.CreateOrderRequest;
-import com.fyp.fyp.dto.OrderDTO;
-import com.fyp.fyp.dto.OrderItemDTO;
+import com.fyp.fyp.dto.*;
 import com.fyp.fyp.model.Enum.OrderStatus;
 import com.fyp.fyp.model.Order;
 import com.fyp.fyp.model.OrderItem;
@@ -16,6 +13,8 @@ import com.fyp.fyp.service.CartService;
 import com.fyp.fyp.service.OrderService;
 import com.fyp.fyp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,26 +106,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getUserOrders(Long userId) {
-        List<Order> orders = orderRepository.findByCustomerId(userId);
-        return orders.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Page<OrderListDTO> getUserOrders(Long userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByCustomerId(userId, pageable);
+        return orders.map(this::convertToListDTO);
     }
 
     @Override
-    public List<OrderDTO> getUserOrdersByStatus(Long userId, OrderStatus status) {
-        List<Order> orders = orderRepository.findByCustomerIdAndStatus(userId, status);
-        return orders.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public Page<OrderListDTO> getUserOrdersByStatus(Long userId, OrderStatus status, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByCustomerIdAndStatus(userId, status, pageable);
+        return orders.map(this::convertToListDTO);
     }
 
     @Override
-    public OrderDTO getOrderDetails(Long orderId) {
+    public Page<OrderListDTO> getUserOrdersByDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByCustomerIdAndOrderDateBetween(userId, startDate, endDate, pageable);
+        return orders.map(this::convertToListDTO);
+    }
+
+    @Override
+    public OrderDetailDTO getOrderDetails(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("订单不存在"));
-        return convertToDTO(order);
+        return convertToDetailDTO(order);
     }
 
     @Override
@@ -176,9 +177,20 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    // 辅助方法：将Order实体转换为OrderDTO
-    private OrderDTO convertToDTO(Order order) {
-        OrderDTO dto = new OrderDTO();
+    // 辅助方法：将Order实体转换为OrderListDTO
+    private OrderListDTO convertToListDTO(Order order) {
+        OrderListDTO dto = new OrderListDTO();
+        dto.setId(order.getId());
+        dto.setOrderDate(order.getOrderDate());
+        dto.setStatus(order.getStatus());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setNotes(order.getNotes());
+        return dto;
+    }
+
+    // 辅助方法：将Order实体转换为OrderDetailDTO
+    private OrderDetailDTO convertToDetailDTO(Order order) {
+        OrderDetailDTO dto = new OrderDetailDTO();
         dto.setId(order.getId());
         dto.setCustomerId(order.getCustomer().getId());
         dto.setCustomerName(order.getCustomer().getUsername());

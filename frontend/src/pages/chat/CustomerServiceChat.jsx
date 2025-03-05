@@ -93,8 +93,8 @@ export default function CustomerServiceChat() {
     if (selectedCustomer && contacts.find(c => 
       c.chatRoomId === chatRoomId && c.customerId === selectedCustomer
     )) {
-      setMessages(prev => [...prev, newMessage]);
       setLoading(false);
+      setMessages(prev => [...prev, newMessage]);
     }
 
     // 更新联系人列表中的最后一条消息
@@ -123,6 +123,7 @@ export default function CustomerServiceChat() {
         message => {
           const newMessage = JSON.parse(message.body);
           handleNewMessage(contact.chatRoomId, newMessage);
+          setLoading(false);
         }
       );
       console.log(`已订阅聊天室: ${contact.chatRoomId}`);
